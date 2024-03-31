@@ -1,65 +1,49 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-} from 'react-native';
-import { Link, router, Navigator } from 'expo-router';
+import { useEffect } from 'react';
+import { LogBox } from 'react-native';
+import { router } from 'expo-router';
+import { Stack } from 'expo-router/stack';
+
+const isProductionMode = false;
 
 export default function RootApp() {
 
+  LogBox.ignoreAllLogs(isProductionMode);
+
   // User 
-  const user = null;
+  const user = 'Admin Guilherme';
 
-  // Home
-  function h(){
-    
-    router.push(`home?user=${user}`);
-
-  }
-
-  // Login
-  function l(){
-
-    router.push('login')
-
-  }
-
-  function testing(){
-
+  async function userLogging(){
     setTimeout(()=>{
-
       if(user){ 
-        h();
+        router.push(`home?user=${user}`);
 
       }else{ 
-        l(); 
+        router.push('login')
       
       }
 
-    }, 0)
-
+    }, 250)
   }
+
+  useEffect(()=>{
+    userLogging();
+
+  }, []);
 
   // Return
   return (
 
-    <View>
+    <Stack screenOptions={{ headerShown: false }}>
 
-      <StatusBar style="auto" />
+        <Stack.Screen name="index" options={{ title: "Aplicativo" }} />
 
-      <Text>Root Page</Text>
+        <Stack.Screen name="login/index" options={{ title: "Login" }} />
 
-      <Link href="/login"></Link>
-      <Link href={{pathname: "/home", params: { user: user }}}></Link>
-      
-      {
-        testing()
-      }
+        <Stack.Screen name="prevision/index" options={{ title: "Previsão" }} />
 
-    </View>
+        <Stack.Screen name="home/index" options={{ title: "Home" }} />
+
+    </Stack>
 
   );
 

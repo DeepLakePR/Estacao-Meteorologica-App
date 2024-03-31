@@ -1,12 +1,14 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-    StyleSheet,
     Text,
     View,
-    ScrollView,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    Keyboard,
+    FlatList,
+    Modal,
+    Image
 } from "react-native";
 import {
     SafeAreaView,
@@ -17,10 +19,15 @@ import { Link, router, Navigator, useLocalSearchParams } from "expo-router";
 // Style
 import HomeStyle from "./home-style.js";
 
-// XLSX
-import * as XLSX from "xlsx";
-import * as FileSystem from "expo-file-system";
-import * as Sharing from "expo-sharing";
+// Icons
+import { AntDesign, Fontisto, Entypo } from '@expo/vector-icons';
+
+// Firestore
+import { Database } from '../firebase.initialize.js';
+import { collection, getDocs, addDoc, Timestamp, query, orderBy, onSnapshot } from 'firebase/firestore'
+
+// Variables
+const mainInputsPHTextColor = "#c9c9c9"; // Main Inputs Place Holder Text Color
 
 // Home Function
 export default function Home() {
@@ -31,62 +38,160 @@ export default function Home() {
     // User
     const { user } = useLocalSearchParams();
 
-    // Generate Excel
-    const generateExcel = () => {
+    if(user === null || user === undefined){
+        router.push('login');
 
-        let wb = XLSX.utils.book_new();
-        let ws = XLSX.utils.aoa_to_sheet([
-            ["Temperatura C°", "Umidade", "Pressão Atmosférica", "Índice UV"],
-            ["28 Cº", "86%", "1015.2 mb", "0 de 11"],
-        ]);
+    }
 
-        XLSX.utils.book_append_sheet(wb, ws, "EstacaoMeteorologica", true);
+    // Previsions
+    const PrevisionsDatabaseRef = collection(Database, "previsions");
 
-        const base64 = XLSX.write(wb, { type: "base64" });
-        const filename = FileSystem.documentDirectory + "EstacaoMeteorologica.xlsx";
+    const [ modalCreatePrevision, setModalCreatePrevision ] = useState(false);
+    const [ newPrevisionTitle, setNewPrevisionTitle ] = useState(null);
 
-        FileSystem.writeAsStringAsync(filename, base64, {
-            encoding: 'base64',
+    const [ allPrevisions, setNewPrevision ] = useState([]);
 
-        }).then(() => {
-            Sharing.shareAsync(filename);
+    // Get Date Local Time
+    const CurrentHours = new Date().getHours();
+
+    var dateLocalTime = CurrentHours >= 5 && CurrentHours <= 12 ? 'Bom dia,' : CurrentHours >= 13 && CurrentHours <= 18 ? 'Boa tarde,' : 'Boa noite,'
+
+    // Get All Previsions
+    async function getAllPrevisions(){
+
+        const finalDataPrevisions = [];
+
+        const getPrevisionsQuery = query(PrevisionsDatabaseRef, orderBy("createdAt", "asc"));
+
+        await getDocs(getPrevisionsQuery).then((querySnapshot) => {
+            querySnapshot.docs.forEach((doc) => {
+                finalDataPrevisions.push(doc);
+
+            });
+        })
+
+        setNewPrevision(finalDataPrevisions);
+
+    }
+
+    // Real Time Update Previsions
+    async function realTimeUpdatePrevisions(){
+        
+        const realTimeUpdateQuery = query(PrevisionsDatabaseRef);
+        await onSnapshot(realTimeUpdateQuery, ()=>{
+            getAllPrevisions();
 
         });
 
-    };
+    }
+
+    // Create New Prevision
+    async function createPrevision(){
+
+        Keyboard.dismiss();
+
+        // Check if is empty
+        if(newPrevisionTitle === null || newPrevisionTitle.trim() === ''){
+            return alert("Insira o nome da nova previsão.");
+        }
+
+        // Create New Prevision Document
+        await addDoc(PrevisionsDatabaseRef, {
+            previsionTitle: newPrevisionTitle,
+            createdAt: Timestamp.fromDate(new Date()),
+            createdBy: user,
+        });
+
+        setModalCreatePrevision(!modalCreatePrevision);
+
+    }
+
+    // Go To Prevision Info
+    function goToPrevisionInfo(previsionInfo){
+        router.push(`prevision?user=${user}&previsionId=${previsionInfo.id}`);
+        return true;
+
+    }
+
+    // Call Get All Previsions Async Function
+    useEffect(()=>{
+        getAllPrevisions();
+        realTimeUpdatePrevisions();
+
+    }, []);
 
     // Return
     return (
 
-        <View style={{ ...HomeStyle.mainContainer, paddingTop: safeAreaInsets.top }}>
+        <View style={{ ...HomeStyle.mainContainer, paddingTop: safeAreaInsets.top - 5 }}>
 
             <StatusBar style="light" backgroundColor="#262626" />
 
+            <Image style={HomeStyle.homeBackgroundImage} source={require('../../../assets/home/home-background.jpg')} />
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalCreatePrevision}
+                onRequestClose={() => {
+                    setModalCreatePrevision(!modalCreatePrevision);
+                }}>
+
+                <View style={HomeStyle.modalCreatePrevisionContainer}>
+                    <View style={HomeStyle.modalCreatePrevisionView}>
+
+                        <TouchableOpacity style={HomeStyle.modalCreatePrevisionCloseButton} onPress={() => setModalCreatePrevision(!modalCreatePrevision)}>
+                            <Text style={HomeStyle.modalCreatePrevisionText}>X</Text>
+                        </TouchableOpacity>
+
+                        <Text style={HomeStyle.modalCreatePrevisionTitle}>Criar Previsão</Text>
+
+                        <TextInput style={HomeStyle.modalCreatePrevisionInput} onChangeText={(newText)=> setNewPrevisionTitle(newText)} placeholder={"Nome da Previsão"} placeholderTextColor={'#a8a8a8'} />
+
+                        <TouchableOpacity style={HomeStyle.modalCreatePrevisionSubmit} onPress={() => createPrevision()}>
+                            <Text style={{...HomeStyle.modalCreatePrevisionText, fontSize: 17}}>Criar</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </View>
+
+            </Modal>
+
             <View style={HomeStyle.homeHeader}>
-                <Text style={HomeStyle.headerText}>Bom dia, <Text style={{ color: "#1195f2", fontWeight: "bold" }}>{user}</Text></Text>
+                <Text style={HomeStyle.headerText}>
+                    {dateLocalTime} <Text style={{ color: "#1195f2", fontWeight: "bold" }}>{user}</Text>
+                </Text>
             </View>
 
-            <View style={HomeStyle.homeExcelGeneratorView}>
+            <View style={HomeStyle.homeWrapper}>
 
-                <Text style={{ fontSize: 17, textAlign: "center", marginBottom: 7 }}>Insira as informações da Estação Meteorológica</Text>
+                <FlatList
+                    style={HomeStyle.homePrevisionsList}
+                    contentContainerStyle={{alignItems: 'center'}}
+                    data={allPrevisions}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => {
 
-                <TextInput style={HomeStyle.homeInput} placeholder={"Temperatura C°"} placeholderTextColor={"#c9c9c9"} />
+                        return <View style={HomeStyle.homePrevisionBox} previsionId={item.id}>
 
-                <TextInput style={HomeStyle.homeInput} placeholder={"Umidade"} placeholderTextColor={"#c9c9c9"} />
+                            <Fontisto style={HomeStyle.homePrevisionBoxIcon} name="day-cloudy" size={34} color="black" />
 
-                <TextInput style={HomeStyle.homeInput} placeholder={"Pressão Atmosférica"} placeholderTextColor={"#c9c9c9"} />
+                            <Text style={HomeStyle.homePrevisionBoxTitle}>{item.data().previsionTitle}</Text>
 
-                <TextInput style={{ ...HomeStyle.homeInput, marginBottom: 25 }} placeholder={"Índice UV"} placeholderTextColor={"#c9c9c9"} />
+                            <TouchableOpacity style={HomeStyle.homePrevisionBoxButton} onPress={()=> goToPrevisionInfo(item)}>
+                                <Entypo name="dots-three-horizontal" size={26} color="black" />
+                            </TouchableOpacity>
 
-                <TouchableOpacity style={HomeStyle.homeGenerateExcel} onPress={(e) => generateExcel()} activeOpacity={0.6}>
-                    <Text style={{ color: "white", fontSize: 17 }}>Gerar Planilha no Excel</Text>
-                </TouchableOpacity>
+                        </View>
+
+                    }}
+                />
 
             </View>
 
-            <View style={{ flex: 0.2, alignItems: "center", justifyContent: "flex-end", padding: 20 }}>
-                <Text style={{ color: "#919191" }}>© 2024 Todos os direitos reservados - Szymanski</Text>
-            </View>
+            <TouchableOpacity style={HomeStyle.homeCreatePrevisionButton} onPress={()=>setModalCreatePrevision(!modalCreatePrevision)}>
+                <AntDesign name="plus" size={24} color="black" />
+            </TouchableOpacity>
 
         </View>
 

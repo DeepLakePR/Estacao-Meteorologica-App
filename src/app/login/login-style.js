@@ -10,7 +10,7 @@ const LoginStyle = StyleSheet.create({
     },
 
     loginIcon:{
-        marginTop: 100,
+        marginTop: 60,
         width: 170,
         height: 170,
         marginBottom: 15,

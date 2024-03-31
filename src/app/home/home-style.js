@@ -2,11 +2,24 @@ import { StyleSheet } from 'react-native';
 
 const HomeStyle = StyleSheet.create({
 
+    ////////////////////////
+    // Main Container
     mainContainer:{
         flex: 1,
-        justifyContent: 'flex-start',
         alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: '#e3e3e3',
+    },
+
+    // Background Image
+    homeBackgroundImage:{
+        position: 'absolute',
+        bottom: 0,
+        objectFit: 'cover',
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        opacity: 0.4
     },
 
     homeHeader:{
@@ -21,34 +34,139 @@ const HomeStyle = StyleSheet.create({
     headerText:{
         color: 'white',
         fontSize: 18,
+        textAlign: 'center'
     },
 
-    homeExcelGeneratorView:{
+    ////////////////////////
+    // Wrapper
+    homeWrapper:{
         alignItems: 'center',
         justifyContent: 'center',
-        flex: 0.8,
+        width: '100%',
+        height: '100%',
     },
 
-    homeInput:{
-        width: 250,
-        height: 36,
-        backgroundColor: 'white',
-        color: 'black',
-        textAlign: 'center',
+    ////////////////////////
+    // Create Prevision Button
+    homeCreatePrevisionButton:{
+        position: 'absolute',
+        right: 15,
+        bottom: 15,
+        backgroundColor: '#fff',
+        padding: 6,
+        borderRadius: 8,
+
+        // Android Shadow
+        elevation: 5,
+
+        // IOs Shadow
+        shadowColor: '#171717',
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+    },
+
+    ////////////////////////
+    // Previsions List
+    homePrevisionsList:{
+        width: '100%', 
+        height: '100%',
+        paddingTop: 20
+    },
+
+    ////////////////////////
+    // Prevision Single Box
+    homePrevisionBox:{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        minWidth: '90%',
+        marginBottom: 15,
+        padding: 15,
+        borderRadius: 8,
+        backgroundColor: '#f5f5f5',
+        position: 'relative',
+
+        // Android Shadow
+        elevation: 7,
+
+        // IOs Shadow
+        shadowColor: '#171717',
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+    },
+
+    homePrevisionBoxIcon:{
+        marginRight: 10,
+    },
+
+    homePrevisionBoxTitle:{
         fontSize: 16,
-        marginTop: 10,
-        marginBottom: 8,
+    },
+
+    homePrevisionBoxButton:{
+        padding: 8,
+        position: 'absolute',
+        right: 8,
+    },
+
+    ////////////////////////
+    // Modal Create Prevision
+    modalCreatePrevisionContainer:{
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    modalCreatePrevisionView:{
+        width: '80%',
+        padding: 15,
+        paddingTop: 25,
+        paddingBottom: 25,
+        borderRadius: 6,
+        backgroundColor: 'white',
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    modalCreatePrevisionCloseButton:{
+        position: 'absolute',
+        top: 0,
+        right: 5,
+        padding: 10
+    },
+
+    modalCreatePrevisionTitle:{
+        fontSize: 21,
+        textAlign: 'center',
+    },
+
+    modalCreatePrevisionText:{
+        fontSize: 19,
+        textAlign: 'center',
+    },
+
+    modalCreatePrevisionInput:{
+        width: '80%',
+        borderRadius: 4,
+        padding: 8,
+        fontSize: 16,
+        backgroundColor: '#e8e8e8',
+        marginTop: 15,
+        marginBottom: 30,
+        textAlign: 'center',
+    },
+
+    modalCreatePrevisionSubmit:{
+        width: '60%',
+        padding: 8,
+        textAlign: 'center',
+        backgroundColor: '#e3e3e3',
         borderRadius: 4,
     },
-
-    homeGenerateExcel:{
-        width: 200,
-        height: 38,
-        backgroundColor: '#262626',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 5
-    }
 
 });
 

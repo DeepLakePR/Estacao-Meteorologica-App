@@ -36,7 +36,8 @@ export default function Home() {
     const safeAreaInsets = useSafeAreaInsets();
 
     // User
-    const { user } = useLocalSearchParams();
+    const user = JSON.parse(useLocalSearchParams().user);
+    const userName = user.userName;
 
     if(user === null || user === undefined){
         router.push('login');
@@ -54,7 +55,7 @@ export default function Home() {
     // Get Date Local Time
     const CurrentHours = new Date().getHours();
 
-    var dateLocalTime = CurrentHours >= 5 && CurrentHours <= 12 ? 'Bom dia,' : CurrentHours >= 13 && CurrentHours <= 18 ? 'Boa tarde,' : 'Boa noite,'
+    var dateLocalTime = CurrentHours >= 5 && CurrentHours <= 12 ? 'Bom dia,' : CurrentHours >= 13 && CurrentHours <= 17 ? 'Boa tarde,' : 'Boa noite,'
 
     // Get All Previsions
     async function getAllPrevisions(){
@@ -99,7 +100,7 @@ export default function Home() {
         await addDoc(PrevisionsDatabaseRef, {
             previsionTitle: newPrevisionTitle,
             createdAt: Timestamp.fromDate(new Date()),
-            createdBy: user,
+            createdBy: userName,
         });
 
         setModalCreatePrevision(!modalCreatePrevision);
@@ -108,7 +109,7 @@ export default function Home() {
 
     // Go To Prevision Info
     function goToPrevisionInfo(previsionInfo){
-        router.push(`prevision?user=${user}&previsionId=${previsionInfo.id}`);
+        router.push(`prevision?user=${JSON.stringify(user)}&previsionId=${previsionInfo.id}`);
         return true;
 
     }
@@ -159,7 +160,7 @@ export default function Home() {
 
             <View style={HomeStyle.homeHeader}>
                 <Text style={HomeStyle.headerText}>
-                    {dateLocalTime} <Text style={{ color: "#1195f2", fontWeight: "bold" }}>{user}</Text>
+                    {dateLocalTime} <Text style={{ color: "#1195f2", fontWeight: "bold" }}>{userName}</Text>
                 </Text>
             </View>
 
@@ -189,9 +190,16 @@ export default function Home() {
 
             </View>
 
-            <TouchableOpacity style={HomeStyle.homeCreatePrevisionButton} onPress={()=>setModalCreatePrevision(!modalCreatePrevision)}>
-                <AntDesign name="plus" size={24} color="black" />
-            </TouchableOpacity>
+            {
+                user.isAdministrator 
+                ?
+                <TouchableOpacity style={HomeStyle.homeCreatePrevisionButton} 
+                onPress={()=>setModalCreatePrevision(!modalCreatePrevision)}>
+                    <AntDesign name="plus" size={24} color="black" />
+                </TouchableOpacity>
+                :
+                ''
+            }
 
         </View>
 

@@ -28,12 +28,13 @@ import { AntDesign } from '@expo/vector-icons';
 
 // XLSX
 import * as XLSX from "xlsx";
-import { readDirectoryAsync, cacheDirectory, documentDirectory, copyAsync, writeAsStringAsync, StorageAccessFramework, EncodingType } from "expo-file-system";
+import { writeAsStringAsync, StorageAccessFramework, EncodingType } from "expo-file-system";
 import * as Sharing from "expo-sharing";
+
 
 // Firestore
 import { Database } from '../firebase.initialize.js';
-import { collection, getDoc, getDocs, doc, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore'
+import { collection, getDoc, getDocs, doc, addDoc, query, orderBy, onSnapshot, where } from 'firebase/firestore'
 
 // Variables
 const mainInputsPHTextColor = "#a8a8a8"; // Create Anotation Inputs Place Holder Text Color
@@ -45,7 +46,7 @@ export default function Prevision() {
     const safeAreaInsets = useSafeAreaInsets();
 
     // User
-    const { user } = useLocalSearchParams();
+    const user = JSON.parse(useLocalSearchParams().user);
 
     const HeadTable = [
         "Data",
@@ -86,7 +87,8 @@ export default function Prevision() {
     const [previsionAnotationsInfo, setPrevisionAnotationsInfo] = useState([]);
 
     if (previsionId === null || previsionId === undefined) {
-        router.push('home');
+        router.push(`home?user=${JSON.stringify(user)}`);
+
     }
 
     const [previsionLoadingIconDisplay, setPrevisionLoadingIconDisplay] = useState('none');
@@ -103,6 +105,7 @@ export default function Prevision() {
     // Generate Excel
     const generateExcel = async (daysDuration) => {
 
+        // Keyboard Dismiss
         Keyboard.dismiss();
 
         // Excel Data
@@ -127,19 +130,27 @@ export default function Prevision() {
 
         ]);
 
-        previsionAnotationsInfo.forEach((anotationInfo, index)=>{
-            XLSX.utils.sheet_add_aoa(ws, [
-                anotationInfo,
-            ], { origin: index + 1});
-        })
+        let dates = getPrevisionAnotationsInfo(false, daysDuration);
+
+        await dates.then((anotationsList)=>{
+
+            anotationsList.forEach(async(anotationInfo, index)=>{
+
+                await XLSX.utils.sheet_add_aoa(ws, [
+                    anotationInfo
+                ], { origin: index + 1});
+
+            })
+
+        });
 
         // Month Name
-        let monthName = new Date().toLocaleString('pt-BR', { month: 'long' });
+        let monthName = previsionInfo.createdAt.toDate().toLocaleString('pt-BR', { month: 'long' });
         monthName = monthName[0].toUpperCase() + monthName.substring(1);
 
         // Create Excel
-        XLSX.utils.book_append_sheet(wb, ws, `Estacao Meteorologica ${monthName}`, true);
-        const excelData = XLSX.write(wb, { type: "base64" });
+        await XLSX.utils.book_append_sheet(wb, ws, `Estacao Meteorologica ${monthName}`, true);
+        const excelData = await XLSX.write(wb, { type: "base64" });
 
         // File Info
         const fileName = `Estacao_Meteorologica_${monthName}.xlsx`;
@@ -157,7 +168,14 @@ export default function Prevision() {
             'base64'
         )
 
-        await writeAsStringAsync(newExcelFile, excelData, { encoding: EncodingType.Base64 });
+        setTimeout(async()=>{
+            await writeAsStringAsync(newExcelFile, excelData, { encoding: EncodingType.Base64 });
+
+        }, 1500);
+
+        ///////////////////
+        // XLSX Chart
+        const workbook = new ExcelJS.Workbook();
 
     };
     //////////////////////////////////
@@ -171,11 +189,32 @@ export default function Prevision() {
     }
 
     // Get Prevision Anotations Info
-    async function getPrevisionAnotationsInfo() {
+    async function getPrevisionAnotationsInfo(isSetState, maxDaysToGet) {
+
+        if(maxDaysToGet){
+            var previsionStartDate = previsionInfo.createdAt.toDate();
+            
+            var previsionLimitEndDate = previsionInfo.createdAt.toDate();
+            previsionLimitEndDate.setDate(previsionLimitEndDate.getDate() + maxDaysToGet);
+
+            var getLimitedAnotationsPrevision = query(
+                PrevisionAnotationsRef, 
+                orderBy("anotationCreatedAt", "asc"),    
+                where('anotationCreatedAt', '>=', previsionStartDate), 
+                where('anotationCreatedAt', '<=', previsionLimitEndDate)
+    
+            );
+            
+        }
+
+        let getAllAnotationsPrevision = query(
+            PrevisionAnotationsRef, 
+            orderBy("anotationCreatedAt", "asc")
+        );
 
         const finalDataPrevisionAnotations = [];
 
-        const getPrevisionAnotationsQuery = query(PrevisionAnotationsRef, orderBy("anotationCreatedAt", "asc"));
+        const getPrevisionAnotationsQuery = !maxDaysToGet ? getAllAnotationsPrevision : getLimitedAnotationsPrevision
 
         await getDocs(getPrevisionAnotationsQuery).then((querySnapshot) => {
 
@@ -186,7 +225,7 @@ export default function Prevision() {
                     anotationDoc.data().anotationCreatedAt.toDate().toLocaleString(
                         'pt-BR',
                         {
-                            month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+                            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
                         }
                     ),
 
@@ -213,7 +252,14 @@ export default function Prevision() {
 
         });
 
-        setPrevisionAnotationsInfo(finalDataPrevisionAnotations);
+        if(isSetState){
+            setPrevisionAnotationsInfo(finalDataPrevisionAnotations);
+            return;
+
+        }else{
+            return finalDataPrevisionAnotations;
+
+        }
 
     }
 
@@ -223,7 +269,7 @@ export default function Prevision() {
         const realTimeUpdateAnotationsQuery = query(PrevisionAnotationsRef);
 
         await onSnapshot(realTimeUpdateAnotationsQuery, () => {
-            getPrevisionAnotationsInfo();
+            getPrevisionAnotationsInfo(true);
 
         });
 
@@ -247,7 +293,7 @@ export default function Prevision() {
             await addDoc(PrevisionAnotationsRef, {
                 ...newPrevisionAnotation,
                 'anotationCreatedAt': new Date(),
-                'anotationCreatedBy': user
+                'anotationCreatedBy': user.userName
             });
 
             setModalCreateAnotation(!modalCreateAnotation);
@@ -283,7 +329,7 @@ export default function Prevision() {
     }
 
     useEffect(() => {
-        getPrevisionAnotationsInfo();
+        getPrevisionAnotationsInfo(true);
         getPrevisionInfo();
         realTimeUpdatePrevisionAnotations();
 
@@ -389,7 +435,8 @@ export default function Prevision() {
             </Modal>
 
             <View style={PrevisionStyle.previsionHeader}>
-                <TouchableOpacity style={PrevisionStyle.backToHomeButton} onPress={() => router.push(`home?user=${user}`)}>
+                <TouchableOpacity style={PrevisionStyle.backToHomeButton} onPress={() => 
+                    router.push(`home?user=${JSON.stringify(user)}`)}>
                     <AntDesign name="left" size={24} color="black" />
                 </TouchableOpacity>
 
@@ -445,7 +492,7 @@ export default function Prevision() {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={PrevisionStyle.generateButton}
-                        onPress={() => generateExcel(30)}>
+                        onPress={() => generateExcel(31)}>
                         <Text style={PrevisionStyle.generateButtonText}>Mensal</Text>
                     </TouchableOpacity>
 

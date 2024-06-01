@@ -175,7 +175,7 @@ export default function Home() {
 
                         return <View style={HomeStyle.homePrevisionBox} previsionId={item.id}>
 
-                            <Fontisto style={HomeStyle.homePrevisionBoxIcon} name="day-cloudy" size={34} color="black" />
+                            <Image style={HomeStyle.homePrevisionBoxIcon} source={require('../../../assets/home/prevision-box-icon.png')} />
 
                             <Text style={HomeStyle.homePrevisionBoxTitle}>{item.data().previsionTitle}</Text>
 

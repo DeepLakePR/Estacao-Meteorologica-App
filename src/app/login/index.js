@@ -42,6 +42,7 @@ export default function Login() {
         
         // Login User Info Result
         let userInfoResult = await SecureStore.getItemAsync('userInfo');
+        
         if(userInfoResult){
             router.push(`home?user=${userInfoResult}`);
 
@@ -104,6 +105,8 @@ export default function Login() {
                 'userName': userData.userName,
                 'password': userData.password,
                 'userCMGRegister': userData.userCGMRegister,
+                'isAdministrator': userData.isAdministrator,
+                'isActivatedAccount': userData.isActivatedAccount,
                 'sessionEndDate': sessionEndDate
             }));
 

@@ -19,7 +19,7 @@ const HomeStyle = StyleSheet.create({
         flex: 1,
         width: '100%',
         height: '100%',
-        opacity: 0.4
+        opacity: 0.8
     },
 
     homeHeader:{
@@ -52,12 +52,12 @@ const HomeStyle = StyleSheet.create({
         position: 'absolute',
         right: 15,
         bottom: 15,
-        backgroundColor: '#fff',
+        backgroundColor: '#f7f7f7',
         padding: 6,
         borderRadius: 8,
 
         // Android Shadow
-        elevation: 5,
+        elevation: 4,
 
         // IOs Shadow
         shadowColor: '#171717',
@@ -98,15 +98,20 @@ const HomeStyle = StyleSheet.create({
     },
 
     homePrevisionBoxIcon:{
-        marginRight: 10,
+        marginRight: 15,
+        width: 44,
+        height: 44,
     },
 
     homePrevisionBoxTitle:{
-        fontSize: 16,
+        fontSize: 17,
     },
 
     homePrevisionBoxButton:{
-        padding: 8,
+        paddingTop: 8,
+        paddingBottom: 8,
+        paddingLeft: 12,
+        paddingRight: 12,
         position: 'absolute',
         right: 8,
     },

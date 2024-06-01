@@ -82,8 +82,12 @@ export default function RootApp() {
   
           }else{ // Ready = All Is Okay, Can go to Home Page
 
+            let sendedUserInfoResult = JSON.stringify(userDoc.docs[0].data());
+
+            console.log(sendedUserInfoResult);
+
             // Go To Home
-            router.push(`home?user=${JSON.stringify(userInfoResult)}`);
+            router.push(`home?user=${sendedUserInfoResult}`);
             return;
   
           }

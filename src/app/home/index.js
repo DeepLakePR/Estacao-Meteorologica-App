@@ -168,7 +168,7 @@ export default function Home() {
 
                 <FlatList
                     style={HomeStyle.homePrevisionsList}
-                    contentContainerStyle={{alignItems: 'center'}}
+                    contentContainerStyle={{alignItems: 'center', paddingBottom: 70}} 
                     data={allPrevisions}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => {

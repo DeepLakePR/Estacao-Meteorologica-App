@@ -71,7 +71,7 @@ const HomeStyle = StyleSheet.create({
     homePrevisionsList:{
         width: '100%', 
         height: '100%',
-        paddingTop: 20
+        paddingTop: 20,
     },
 
     ////////////////////////

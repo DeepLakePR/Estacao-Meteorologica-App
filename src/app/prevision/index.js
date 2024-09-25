@@ -9,7 +9,8 @@ import {
     FlatList,
     Modal,
     ScrollView,
-    ActivityIndicator
+    ActivityIndicator,
+    SafeAreaView
 } from "react-native";
 
 import {
@@ -19,6 +20,9 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
+
+// Date Time Picker
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 // Style
 import PrevisionStyle from "./prevision-style.js";
@@ -96,6 +100,12 @@ export default function Prevision() {
     const [newPrevisionAnotation, setNewPrevisionAnotation] = useState({});
     const [modalCreateAnotation, setModalCreateAnotation] = useState(false);
 
+    // Modal Date & Hour Picker
+    const [createCurrentDateTimePicker, setCreateCurrentDateTimePicker] = useState(new Date());
+
+    const [showDatePickerModalCreate, setShowDatePickerModalCreate] = useState(false);
+    const [showHourPickerModalCreate, setShowHourPickerModalCreate] = useState(false);
+
     // Prevision
     const PrevisionsDatabaseRef = collection(Database, "previsions");
     const PrevisionDocRef = doc(Database, "previsions", previsionId);
@@ -132,13 +142,13 @@ export default function Prevision() {
 
         let dates = getPrevisionAnotationsInfo(false, daysDuration);
 
-        await dates.then((anotationsList)=>{
+        await dates.then((anotationsList) => {
 
-            anotationsList.forEach(async(anotationInfo, index)=>{
+            anotationsList.forEach(async (anotationInfo, index) => {
 
                 await XLSX.utils.sheet_add_aoa(ws, [
                     anotationInfo
-                ], { origin: index + 1});
+                ], { origin: index + 1 });
 
             })
 
@@ -156,8 +166,8 @@ export default function Prevision() {
         const fileName = `Estacao_Meteorologica_${monthName}.xlsx`;
 
         // Save File into Internal Storage
-        const storageToSaveUri = await StorageAccessFramework.requestDirectoryPermissionsAsync().then((response)=>{
-            if(response.granted){
+        const storageToSaveUri = await StorageAccessFramework.requestDirectoryPermissionsAsync().then((response) => {
+            if (response.granted) {
                 return response.directoryUri;
             }
         })
@@ -168,7 +178,7 @@ export default function Prevision() {
             'base64'
         )
 
-        setTimeout(async()=>{
+        setTimeout(async () => {
             await writeAsStringAsync(newExcelFile, excelData, { encoding: EncodingType.Base64 });
 
         }, 1500);
@@ -191,24 +201,24 @@ export default function Prevision() {
     // Get Prevision Anotations Info
     async function getPrevisionAnotationsInfo(isSetState, maxDaysToGet) {
 
-        if(maxDaysToGet){
+        if (maxDaysToGet) {
             var previsionStartDate = previsionInfo.createdAt.toDate();
-            
+
             var previsionLimitEndDate = previsionInfo.createdAt.toDate();
             previsionLimitEndDate.setDate(previsionLimitEndDate.getDate() + maxDaysToGet);
 
             var getLimitedAnotationsPrevision = query(
-                PrevisionAnotationsRef, 
-                orderBy("anotationCreatedAt", "asc"),    
-                where('anotationCreatedAt', '>=', previsionStartDate), 
+                PrevisionAnotationsRef,
+                orderBy("anotationCreatedAt", "asc"),
+                where('anotationCreatedAt', '>=', previsionStartDate),
                 where('anotationCreatedAt', '<=', previsionLimitEndDate)
-    
+
             );
-            
+
         }
 
         let getAllAnotationsPrevision = query(
-            PrevisionAnotationsRef, 
+            PrevisionAnotationsRef,
             orderBy("anotationCreatedAt", "asc")
         );
 
@@ -225,7 +235,7 @@ export default function Prevision() {
                     anotationDoc.data().anotationCreatedAt.toDate().toLocaleString(
                         'pt-BR',
                         {
-                            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo'
                         }
                     ),
 
@@ -252,11 +262,11 @@ export default function Prevision() {
 
         });
 
-        if(isSetState){
+        if (isSetState) {
             setPrevisionAnotationsInfo(finalDataPrevisionAnotations);
             return;
 
-        }else{
+        } else {
             return finalDataPrevisionAnotations;
 
         }
@@ -292,7 +302,7 @@ export default function Prevision() {
 
             await addDoc(PrevisionAnotationsRef, {
                 ...newPrevisionAnotation,
-                'anotationCreatedAt': new Date(),
+                'anotationCreatedAt': createCurrentDateTimePicker,
                 'anotationCreatedBy': user.userName
             });
 
@@ -414,10 +424,81 @@ export default function Prevision() {
                                 inputMode={'numeric'}
                                 onChangeText={(text) => setNewPrevisionAnotationInput(text, 'Km', 'velocidadeKm')} />
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                            <TextInput style={{...PrevisionStyle.modalCreateAnotationInput, width: '89%'}}
                                 placeholder={"Direção"} placeholderTextColor={mainInputsPHTextColor}
                                 onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'direcao')} />
 
+                            <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
+                            onPress={()=> setShowDatePickerModalCreate(true) }>
+                                <Text style={{ textAlign: 'center' }}>
+                                    {
+                                        createCurrentDateTimePicker.toLocaleDateString(
+                                            'pt-BR', 
+                                            {
+                                                year: 'numeric', 
+                                                month: '2-digit', 
+                                                day: '2-digit', 
+                                                timeZone: 'America/Sao_Paulo'
+                                            }
+                                        )
+                                    }
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
+                            onPress={()=>{ setShowHourPickerModalCreate(true); }}>
+                                <Text style={{ textAlign: 'center' }}>
+                                    {
+                                        createCurrentDateTimePicker.toLocaleTimeString(
+                                            'pt-BR', 
+                                            {
+                                                hour: '2-digit', 
+                                                minute: '2-digit', 
+                                                timeZone: 'America/Sao_Paulo'
+                                            }
+                                        )
+                                    }
+                                </Text>
+                            </TouchableOpacity>
+
+                            <SafeAreaView>
+                            {
+                                showDatePickerModalCreate && (
+                                <DateTimePicker
+                                    value={createCurrentDateTimePicker}
+                                    mode={'date'}
+                                    display={"spinner"}
+                                    is24Hour={true}
+                                    timeZoneName={'America/Sao_Paulo'}
+                                    onChange={(_, newDate)=>{ 
+                                        setShowDatePickerModalCreate(false);
+
+                                        console.log(newDate);
+
+                                        setCreateCurrentDateTimePicker(newDate); 
+                                    }} 
+                                />
+                            )}
+
+                            {
+                                showHourPickerModalCreate && (
+                                    <DateTimePicker
+                                        value={createCurrentDateTimePicker}
+                                        mode={'time'}
+                                        display={"clock"}
+                                        is24Hour={true}
+                                        timeZoneName={'America/Sao_Paulo'}
+                                        onChange={(_, newTime)=>{ 
+                                            setShowHourPickerModalCreate(false);
+
+                                            console.log(newTime);
+
+                                            setCreateCurrentDateTimePicker(newTime); 
+                                        }} 
+                                    />
+                            )}
+                            </SafeAreaView>
+                            
                         </View>
 
 
@@ -435,7 +516,7 @@ export default function Prevision() {
             </Modal>
 
             <View style={PrevisionStyle.previsionHeader}>
-                <TouchableOpacity style={PrevisionStyle.backToHomeButton} onPress={() => 
+                <TouchableOpacity style={PrevisionStyle.backToHomeButton} onPress={() =>
                     router.push(`home?user=${JSON.stringify(user)}`)}>
                     <AntDesign name="left" size={24} color="black" />
                 </TouchableOpacity>

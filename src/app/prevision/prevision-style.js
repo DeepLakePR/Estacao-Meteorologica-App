@@ -6,8 +6,6 @@ const PrevisionStyle = StyleSheet.create({
     // Main Container
     mainContainer: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
         backgroundColor: '#e3e3e3',
         paddingTop: 15,
     },
@@ -38,8 +36,8 @@ const PrevisionStyle = StyleSheet.create({
     // Prevision Table
     previsionTableWrapper:{
         width: '95%', 
-        minHeight: '20%', 
-        maxHeight: '55%', 
+        minHeight: 250, 
+        maxHeight: 500, 
         marginTop: 20, 
         padding: 6,
         paddingTop: 12,
@@ -76,12 +74,41 @@ const PrevisionStyle = StyleSheet.create({
         color: 'white'
     },
 
+    ////////////////////////
+    // Prevision Monthly Average
+    previsionMonthlyAverage:{
+        padding: 20,
+        paddingLeft: 25,
+        paddingRight: 25,
+        marginTop: 20,
+        marginBottom: 10,
+        flexDirection: 'row',
+        flexWrap: 'wrap'
+    },
+
+    previsionMonthlyAverageTitle:{
+        fontSize: 22,
+        marginBottom: 7,
+        width: '100%',
+        textAlign: 'center'
+    },
+
+    previsionMonthlyAverageText:{
+        width: '50%',
+        fontSize: 16,
+        textAlign: 'left',
+        marginTop: 10,
+        marginBottom: 10,
+        paddingBottom: 3,
+        borderBottomColor: 'black',
+        borderBottomWidth: 1
+    },
+
+    ////////////////////////
     // Generate Buttons Wrapper
     generateButtonsWrapper: {
         alignItems: 'center',
         justifyContent: 'center',
-        position: 'absolute',
-        bottom: 0
     },
 
     createAnotationButton: {
@@ -103,7 +130,7 @@ const PrevisionStyle = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
-        marginBottom: 30,
+        marginBottom: 50,
         paddingLeft: 10,
         paddingRight: 10,
     },

@@ -198,7 +198,7 @@ export default function Home() {
                     <AntDesign name="plus" size={24} color="black" />
                 </TouchableOpacity>
                 :
-                ''
+                '' 
             }
 
         </View>

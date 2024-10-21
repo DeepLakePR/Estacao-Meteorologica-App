@@ -111,6 +111,22 @@ export default function Prevision() {
     const PrevisionDocRef = doc(Database, "previsions", previsionId);
     const PrevisionAnotationsRef = collection(PrevisionDocRef, "previsionAnotations");
 
+    // Monthly Average Prevision
+    const [Average_TempSeco, setAverage_TempSeco] = useState("N/A");
+    const [Average_TempUmido, setAverage_TempUmido] = useState("N/A");
+
+    const [Average_UR, setAverage_UR] = useState("N/A");
+
+    const [Average_TempMin, setAverage_TempMin] = useState("N/A");
+    const [Average_TempMax, setAverage_TempMax] = useState("N/A");
+
+    const [Average_Preciptacao, setAverage_Preciptacao] = useState("N/A");
+    const [Average_CeuWeWe, setAverage_CeuWeWe] = useState("N/A");
+    const [Average_Solo0900, setAverage_Solo0900] = useState("N/A");
+    const [Average_Pressao, setAverage_Pressao] = useState("N/A");
+
+    const [Average_VelocidadeVento, setAverage_VelocidadeVento] = useState("N/A");
+
     //////////////////////////////////
     // Generate Excel
     const generateExcel = async (daysDuration) => {
@@ -228,8 +244,26 @@ export default function Prevision() {
 
         await getDocs(getPrevisionAnotationsQuery).then((querySnapshot) => {
 
+            let anotationsLength = querySnapshot.docs.length;
+
+            let sum_TemperaturaSeco = 0;
+            let sum_TemperaturaUmido = 0;
+
+            let sum_UrTabela = 0;
+
+            let sum_TemperaturaMin = 0;
+            let sum_TemperaturaMax = 0;
+
+            let sum_Precipitacao = 0;
+            let sum_CeuWeWe = 0;
+            let sum_Solo0900 = 0;
+            let sum_Pressao = 0;
+
+            let sum_VelocidadeVento = 0;
+
             querySnapshot.docs.forEach((anotationDoc) => {
 
+                // Push to Array
                 finalDataPrevisionAnotations.push([
 
                     anotationDoc.data().anotationCreatedAt.toDate().toLocaleString(
@@ -258,7 +292,38 @@ export default function Prevision() {
 
                 ]);
 
+                // Calculate Average
+                sum_TemperaturaSeco += cleanAndConvertToNumber(anotationDoc.data().temperaturaSeco);
+                sum_TemperaturaUmido += cleanAndConvertToNumber(anotationDoc.data().temperaturaUmido);
+
+                sum_UrTabela += cleanAndConvertToNumber(anotationDoc.data().urTabela);
+
+                sum_TemperaturaMin += cleanAndConvertToNumber(anotationDoc.data().temperaturaMin);
+                sum_TemperaturaMax += cleanAndConvertToNumber(anotationDoc.data().temperaturaMax);
+
+                sum_Precipitacao += cleanAndConvertToNumber(anotationDoc.data().precipitacao);
+                sum_CeuWeWe += cleanAndConvertToNumber(anotationDoc.data().ceuWeWe);
+                sum_Solo0900 += cleanAndConvertToNumber(anotationDoc.data().solo0900);
+                sum_Pressao += cleanAndConvertToNumber(anotationDoc.data().pressao);
+
+                sum_VelocidadeVento += cleanAndConvertToNumber(anotationDoc.data().velocidadeKm);
+
             });
+
+            setAverage_TempSeco(Math.round(isNaN(sum_TemperaturaSeco / anotationsLength) ? 0 : sum_TemperaturaSeco / anotationsLength));
+            setAverage_TempUmido(Math.round(isNaN(sum_TemperaturaUmido / anotationsLength) ? 0 : sum_TemperaturaUmido / anotationsLength));
+        
+            setAverage_UR(Math.round(isNaN(sum_UrTabela / anotationsLength) ? 0 : sum_UrTabela / anotationsLength));
+        
+            setAverage_TempMin(Math.round(isNaN(sum_TemperaturaMin / anotationsLength) ? 0 : sum_TemperaturaMin / anotationsLength));
+            setAverage_TempMax(Math.round(isNaN(sum_TemperaturaMax / anotationsLength) ? 0 : sum_TemperaturaMax / anotationsLength));
+        
+            setAverage_Preciptacao(Math.round(isNaN(sum_Precipitacao / anotationsLength) ? 0 : sum_Precipitacao / anotationsLength));
+            setAverage_CeuWeWe(Math.round(isNaN(sum_CeuWeWe / anotationsLength) ? 0 : sum_CeuWeWe / anotationsLength));
+            setAverage_Solo0900(Math.round(isNaN(sum_Solo0900 / anotationsLength) ? 0 : sum_Solo0900 / anotationsLength));
+            setAverage_Pressao(Math.round(isNaN(sum_Pressao / anotationsLength) ? 0 : sum_Pressao / anotationsLength));
+        
+            setAverage_VelocidadeVento(Math.round(isNaN(sum_VelocidadeVento / anotationsLength) ? 0 : sum_VelocidadeVento / anotationsLength));
 
         });
 
@@ -338,6 +403,24 @@ export default function Prevision() {
         });
     }
 
+    // Clean and Convert Single Information
+    function cleanAndConvertToNumber(value) {
+
+        console.log('teste');
+        console.log(value);
+
+        let cleanedValue = 0;
+
+        if(value)
+            cleanedValue = value.replace(/[^\d.-]/g, '');
+
+        //console.log(cleanedValue);
+        //console.log(parseFloat(cleanedValue));
+
+        return parseFloat(cleanedValue);
+
+    }
+
     useEffect(() => {
         getPrevisionAnotationsInfo(true);
         getPrevisionInfo();
@@ -348,7 +431,8 @@ export default function Prevision() {
     // Return
     return (
 
-        <View style={PrevisionStyle.mainContainer}>
+        <ScrollView style={PrevisionStyle.mainContainer} contentContainerStyle={{alignItems: 'center',justifyContent: 'flex-start'}}
+        nestedScrollEnabled={true}>
 
             <StatusBar style="light" backgroundColor="#262626" />
 
@@ -528,11 +612,12 @@ export default function Prevision() {
 
             <View style={PrevisionStyle.previsionTableWrapper}>
 
-                <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}>
+                <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}
+                nestedScrollEnabled={true}>
 
                     <ScrollView
-                        horizontal={true} showsHorizontalScrollIndicator={true}
-                        showsVerticalScrollIndicator={true}
+                        horizontal={true} showsHorizontalScrollIndicator={true} showsVerticalScrollIndicator={true}
+                        nestedScrollEnabled={true}
                         style={PrevisionStyle.previsionTableScrollView}>
 
                         <Table borderStyle={{ borderWidth: 1, borderColor: '#d9d9d9' }}>
@@ -546,6 +631,50 @@ export default function Prevision() {
                     </ScrollView>
 
                 </ScrollView>
+
+            </View>
+
+            <View style={PrevisionStyle.previsionMonthlyAverage}>
+
+                <Text style={PrevisionStyle.previsionMonthlyAverageTitle}>Médias Mensais:</Text>
+
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Temp Seco: <Text style={{fontWeight: '900'}}>{Average_TempSeco}ºC</Text>
+                </Text>
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Temp Úmido: <Text style={{fontWeight: '900'}}>{Average_TempUmido}ºC</Text>
+                </Text>
+
+                <Text style={{...PrevisionStyle.previsionMonthlyAverageText, width: '100%'}}>
+                    UR: <Text style={{fontWeight: '900'}}>{Average_UR}</Text>
+                </Text>
+
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Temp Mínima: <Text style={{fontWeight: '900'}}>{Average_TempMin}ºC</Text>
+                </Text>
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Temp Máxima: <Text style={{fontWeight: '900'}}>{Average_TempMax}ºC</Text>
+                </Text>
+
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Precipitação: <Text style={{fontWeight: '900'}}>{Average_Preciptacao}mm</Text>
+                </Text>
+
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Ceu WeWe: <Text style={{fontWeight: '900'}}>{Average_CeuWeWe}</Text>
+                </Text>
+
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Solo 0900: <Text style={{fontWeight: '900'}}>{Average_Solo0900}</Text>
+                </Text>
+
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Pressão: <Text style={{fontWeight: '900'}}>{Average_Pressao}hPa</Text>
+                </Text>
+
+                <Text style={{...PrevisionStyle.previsionMonthlyAverageText, width: '100%'}}>
+                    Veloc Vento Km/h: <Text style={{fontWeight: '900'}}>{Average_VelocidadeVento}Km/h</Text>
+                </Text>
 
             </View>
 
@@ -581,7 +710,7 @@ export default function Prevision() {
 
             </View>
 
-        </View>
+        </ScrollView>
 
     );
 

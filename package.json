@@ -37,7 +37,8 @@
     "react-native-web": "^0.19.12",
     "xlsx": "^0.18.5",
     "xlsx-chart": "^0.4.3",
-    "@react-native-community/datetimepicker": "8.0.1"
+    "@react-native-community/datetimepicker": "8.0.1",
+    "expo-updates": "~0.25.27"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"

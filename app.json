@@ -6,19 +6,16 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "Estacao-Meteorologica",
+    "scheme": "estacaometeorologica",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "config": {
-        "usesNonExemptEncryption": false
-      },
       "supportsTablet": true,
       "bundleIdentifier": "-"
     },
@@ -49,6 +46,15 @@
       "eas": {
         "projectId": "886b2ed2-099d-4916-9cc5-159170698f90"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/886b2ed2-099d-4916-9cc5-159170698f90"
     }
   }
 }

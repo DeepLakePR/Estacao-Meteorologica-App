@@ -33,8 +33,6 @@ import { AntDesign } from '@expo/vector-icons';
 // XLSX
 import * as XLSX from "xlsx";
 import { writeAsStringAsync, StorageAccessFramework, EncodingType } from "expo-file-system";
-import * as Sharing from "expo-sharing";
-
 
 // Firestore
 import { Database } from '../firebase.initialize.js';
@@ -45,9 +43,6 @@ const mainInputsPHTextColor = "#a8a8a8"; // Create Anotation Inputs Place Holder
 
 // Prevision Function
 export default function Prevision() {
-
-    // SafeArea
-    const safeAreaInsets = useSafeAreaInsets();
 
     // User
     const user = JSON.parse(useLocalSearchParams().user);
@@ -312,17 +307,17 @@ export default function Prevision() {
 
             setAverage_TempSeco(Math.round(isNaN(sum_TemperaturaSeco / anotationsLength) ? 0 : sum_TemperaturaSeco / anotationsLength));
             setAverage_TempUmido(Math.round(isNaN(sum_TemperaturaUmido / anotationsLength) ? 0 : sum_TemperaturaUmido / anotationsLength));
-        
+
             setAverage_UR(Math.round(isNaN(sum_UrTabela / anotationsLength) ? 0 : sum_UrTabela / anotationsLength));
-        
+
             setAverage_TempMin(Math.round(isNaN(sum_TemperaturaMin / anotationsLength) ? 0 : sum_TemperaturaMin / anotationsLength));
             setAverage_TempMax(Math.round(isNaN(sum_TemperaturaMax / anotationsLength) ? 0 : sum_TemperaturaMax / anotationsLength));
-        
+
             setAverage_Preciptacao(Math.round(isNaN(sum_Precipitacao / anotationsLength) ? 0 : sum_Precipitacao / anotationsLength));
             setAverage_CeuWeWe(Math.round(isNaN(sum_CeuWeWe / anotationsLength) ? 0 : sum_CeuWeWe / anotationsLength));
             setAverage_Solo0900(Math.round(isNaN(sum_Solo0900 / anotationsLength) ? 0 : sum_Solo0900 / anotationsLength));
             setAverage_Pressao(Math.round(isNaN(sum_Pressao / anotationsLength) ? 0 : sum_Pressao / anotationsLength));
-        
+
             setAverage_VelocidadeVento(Math.round(isNaN(sum_VelocidadeVento / anotationsLength) ? 0 : sum_VelocidadeVento / anotationsLength));
 
         });
@@ -411,7 +406,7 @@ export default function Prevision() {
 
         let cleanedValue = 0;
 
-        if(value)
+        if (value)
             cleanedValue = value.replace(/[^\d.-]/g, '');
 
         //console.log(cleanedValue);
@@ -431,8 +426,8 @@ export default function Prevision() {
     // Return
     return (
 
-        <ScrollView style={PrevisionStyle.mainContainer} contentContainerStyle={{alignItems: 'center',justifyContent: 'flex-start'}}
-        nestedScrollEnabled={true}>
+        <ScrollView style={PrevisionStyle.mainContainer} contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start' }}
+            nestedScrollEnabled={true}>
 
             <StatusBar style="light" backgroundColor="#262626" />
 
@@ -508,20 +503,20 @@ export default function Prevision() {
                                 inputMode={'numeric'}
                                 onChangeText={(text) => setNewPrevisionAnotationInput(text, 'Km', 'velocidadeKm')} />
 
-                            <TextInput style={{...PrevisionStyle.modalCreateAnotationInput, width: '89%'}}
+                            <TextInput style={{ ...PrevisionStyle.modalCreateAnotationInput, width: '89%' }}
                                 placeholder={"Direção"} placeholderTextColor={mainInputsPHTextColor}
                                 onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'direcao')} />
 
                             <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
-                            onPress={()=> setShowDatePickerModalCreate(true) }>
+                                onPress={() => setShowDatePickerModalCreate(true)}>
                                 <Text style={{ textAlign: 'center' }}>
                                     {
                                         createCurrentDateTimePicker.toLocaleDateString(
-                                            'pt-BR', 
+                                            'pt-BR',
                                             {
-                                                year: 'numeric', 
-                                                month: '2-digit', 
-                                                day: '2-digit', 
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
                                                 timeZone: 'America/Sao_Paulo'
                                             }
                                         )
@@ -530,14 +525,14 @@ export default function Prevision() {
                             </TouchableOpacity>
 
                             <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
-                            onPress={()=>{ setShowHourPickerModalCreate(true); }}>
+                                onPress={() => { setShowHourPickerModalCreate(true); }}>
                                 <Text style={{ textAlign: 'center' }}>
                                     {
                                         createCurrentDateTimePicker.toLocaleTimeString(
-                                            'pt-BR', 
+                                            'pt-BR',
                                             {
-                                                hour: '2-digit', 
-                                                minute: '2-digit', 
+                                                hour: '2-digit',
+                                                minute: '2-digit',
                                                 timeZone: 'America/Sao_Paulo'
                                             }
                                         )
@@ -546,43 +541,43 @@ export default function Prevision() {
                             </TouchableOpacity>
 
                             <SafeAreaView>
-                            {
-                                showDatePickerModalCreate && (
-                                <DateTimePicker
-                                    value={createCurrentDateTimePicker}
-                                    mode={'date'}
-                                    display={"spinner"}
-                                    is24Hour={true}
-                                    timeZoneName={'America/Sao_Paulo'}
-                                    onChange={(_, newDate)=>{ 
-                                        setShowDatePickerModalCreate(false);
+                                {
+                                    showDatePickerModalCreate && (
+                                        <DateTimePicker
+                                            value={createCurrentDateTimePicker}
+                                            mode={'date'}
+                                            display={"spinner"}
+                                            is24Hour={true}
+                                            timeZoneName={'America/Sao_Paulo'}
+                                            onChange={(_, newDate) => {
+                                                setShowDatePickerModalCreate(false);
 
-                                        console.log(newDate);
+                                                console.log(newDate);
 
-                                        setCreateCurrentDateTimePicker(newDate); 
-                                    }} 
-                                />
-                            )}
+                                                setCreateCurrentDateTimePicker(newDate);
+                                            }}
+                                        />
+                                    )}
 
-                            {
-                                showHourPickerModalCreate && (
-                                    <DateTimePicker
-                                        value={createCurrentDateTimePicker}
-                                        mode={'time'}
-                                        display={"clock"}
-                                        is24Hour={true}
-                                        timeZoneName={'America/Sao_Paulo'}
-                                        onChange={(_, newTime)=>{ 
-                                            setShowHourPickerModalCreate(false);
+                                {
+                                    showHourPickerModalCreate && (
+                                        <DateTimePicker
+                                            value={createCurrentDateTimePicker}
+                                            mode={'time'}
+                                            display={"clock"}
+                                            is24Hour={true}
+                                            timeZoneName={'America/Sao_Paulo'}
+                                            onChange={(_, newTime) => {
+                                                setShowHourPickerModalCreate(false);
 
-                                            console.log(newTime);
+                                                console.log(newTime);
 
-                                            setCreateCurrentDateTimePicker(newTime); 
-                                        }} 
-                                    />
-                            )}
+                                                setCreateCurrentDateTimePicker(newTime);
+                                            }}
+                                        />
+                                    )}
                             </SafeAreaView>
-                            
+
                         </View>
 
 
@@ -613,7 +608,7 @@ export default function Prevision() {
             <View style={PrevisionStyle.previsionTableWrapper}>
 
                 <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}
-                nestedScrollEnabled={true}>
+                    nestedScrollEnabled={true}>
 
                     <ScrollView
                         horizontal={true} showsHorizontalScrollIndicator={true} showsVerticalScrollIndicator={true}
@@ -639,41 +634,41 @@ export default function Prevision() {
                 <Text style={PrevisionStyle.previsionMonthlyAverageTitle}>Médias Mensais:</Text>
 
                 <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Temp Seco: <Text style={{fontWeight: '900'}}>{Average_TempSeco}ºC</Text>
+                    Temp Seco: <Text style={{ fontWeight: '900' }}>{Average_TempSeco}ºC</Text>
                 </Text>
                 <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Temp Úmido: <Text style={{fontWeight: '900'}}>{Average_TempUmido}ºC</Text>
+                    Temp Úmido: <Text style={{ fontWeight: '900' }}>{Average_TempUmido}ºC</Text>
                 </Text>
 
-                <Text style={{...PrevisionStyle.previsionMonthlyAverageText, width: '100%'}}>
-                    UR: <Text style={{fontWeight: '900'}}>{Average_UR}</Text>
-                </Text>
-
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Temp Mínima: <Text style={{fontWeight: '900'}}>{Average_TempMin}ºC</Text>
-                </Text>
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Temp Máxima: <Text style={{fontWeight: '900'}}>{Average_TempMax}ºC</Text>
+                <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
+                    UR: <Text style={{ fontWeight: '900' }}>{Average_UR}</Text>
                 </Text>
 
                 <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Precipitação: <Text style={{fontWeight: '900'}}>{Average_Preciptacao}mm</Text>
+                    Temp Mínima: <Text style={{ fontWeight: '900' }}>{Average_TempMin}ºC</Text>
+                </Text>
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Temp Máxima: <Text style={{ fontWeight: '900' }}>{Average_TempMax}ºC</Text>
                 </Text>
 
                 <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Ceu WeWe: <Text style={{fontWeight: '900'}}>{Average_CeuWeWe}</Text>
+                    Precipitação: <Text style={{ fontWeight: '900' }}>{Average_Preciptacao}mm</Text>
                 </Text>
 
                 <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Solo 0900: <Text style={{fontWeight: '900'}}>{Average_Solo0900}</Text>
+                    Ceu WeWe: <Text style={{ fontWeight: '900' }}>{Average_CeuWeWe}</Text>
                 </Text>
 
                 <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Pressão: <Text style={{fontWeight: '900'}}>{Average_Pressao}hPa</Text>
+                    Solo 0900: <Text style={{ fontWeight: '900' }}>{Average_Solo0900}</Text>
                 </Text>
 
-                <Text style={{...PrevisionStyle.previsionMonthlyAverageText, width: '100%'}}>
-                    Veloc Vento Km/h: <Text style={{fontWeight: '900'}}>{Average_VelocidadeVento}Km/h</Text>
+                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                    Pressão: <Text style={{ fontWeight: '900' }}>{Average_Pressao}hPa</Text>
+                </Text>
+
+                <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
+                    Veloc Vento Km/h: <Text style={{ fontWeight: '900' }}>{Average_VelocidadeVento}Km/h</Text>
                 </Text>
 
             </View>

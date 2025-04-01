@@ -11,29 +11,25 @@ import {
     Image
 } from "react-native";
 import {
-    SafeAreaView,
-    useSafeAreaInsets
+    SafeAreaView
 } from "react-native-safe-area-context";
-import { Link, router, Navigator, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 // Style
 import HomeStyle from "./home-style.js";
 
 // Icons
-import { AntDesign, Fontisto, Entypo } from '@expo/vector-icons';
+import { AntDesign, Entypo } from '@expo/vector-icons';
 
 // Firestore
 import { Database } from '../firebase.initialize.js';
 import { collection, getDocs, addDoc, Timestamp, query, orderBy, onSnapshot } from 'firebase/firestore'
 
-// Variables
-const mainInputsPHTextColor = "#c9c9c9"; // Main Inputs Place Holder Text Color
+import { Collapse, CollapseHeader, CollapseBody } from 'accordion-collapse-react-native';
+
 
 // Home Function
 export default function Home() {
-
-    // SafeArea
-    const safeAreaInsets = useSafeAreaInsets();
 
     // User
     const user = JSON.parse(useLocalSearchParams().user);
@@ -124,7 +120,7 @@ export default function Home() {
     // Return
     return (
 
-        <View style={{ ...HomeStyle.mainContainer, paddingTop: safeAreaInsets.top - 5 }}>
+        <SafeAreaView style={{ ...HomeStyle.mainContainer }}>
 
             <StatusBar style="light" backgroundColor="#262626" />
 
@@ -166,29 +162,49 @@ export default function Home() {
 
             <View style={HomeStyle.homeWrapper}>
 
-                <FlatList
-                    style={HomeStyle.homePrevisionsList}
-                    contentContainerStyle={{alignItems: 'center', paddingBottom: 70}} 
-                    data={allPrevisions}
-                    keyExtractor={item => item.id}
-                    renderItem={({ item }) => {
+                <Collapse>
 
-                        return <View style={HomeStyle.homePrevisionBox} previsionId={item.id}>
+                    <CollapseHeader>
+                        <View style={HomeStyle.homePrevisionBox}>
+                            
 
                             <Image style={HomeStyle.homePrevisionBoxIcon} source={require('../../../assets/home/prevision-box-icon.png')} />
 
-                            <Text style={HomeStyle.homePrevisionBoxTitle}>{item.data().previsionTitle}</Text>
-
-                            <TouchableOpacity style={HomeStyle.homePrevisionBoxButton} onPress={()=> goToPrevisionInfo(item)}>
-                                <Entypo name="dots-three-horizontal" size={26} color="black" />
-                            </TouchableOpacity>
-
+                            <Text style={HomeStyle.homePrevisionBoxTitle}>Previsões de 2024</Text>
                         </View>
+                    </CollapseHeader>
 
-                    }}
-                />
+                    <CollapseBody style={{paddingBottom: 50}}>
+                        <FlatList
+                        style={HomeStyle.homePrevisionsList}
+                        contentContainerStyle={{alignItems: 'center', paddingBottom: 70}} 
+                        data={allPrevisions}
+                        keyExtractor={item => item.id}
+                        renderItem={({ item }) => {
+
+                            return <View style={{...HomeStyle.homePrevisionBox, padding: 9}} previsionId={item.id}>
+
+                                <Image style={HomeStyle.homePrevisionBoxIcon} source={require('../../../assets/home/prevision-box-icon.png')} />
+
+                                <Text style={HomeStyle.homePrevisionBoxTitle}>{item.data().previsionTitle}</Text>
+
+                                <TouchableOpacity style={HomeStyle.homePrevisionBoxButton} onPress={()=> goToPrevisionInfo(item)}>
+                                    <Entypo name="dots-three-horizontal" size={26} color="black" />
+                                </TouchableOpacity>
+
+                            </View>
+
+                        }}
+                    />
+                    </CollapseBody>
+
+                </Collapse>
+
+                
 
             </View>
+
+            
 
             {
                 user.isAdministrator 
@@ -201,7 +217,7 @@ export default function Home() {
                 '' 
             }
 
-        </View>
+        </SafeAreaView>
 
     );
 

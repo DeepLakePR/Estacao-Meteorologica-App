@@ -139,8 +139,7 @@ export default function Login() {
 
         <View style={LoginStyle.mainContainer}>
 
-            <StatusBar style="auto" />
-
+            <StatusBar style="dark" hidden={false} translucent={true} backgroundColor="#e3e3e3" />
 
             <Image style={LoginStyle.loginIcon} source={require("../../../assets/login/login-asset.png")} />
 
@@ -164,7 +163,7 @@ export default function Login() {
 
 
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', padding: 20 }}>
-                <Text style={{ color: '#919191' }}>© 2024 Todos os direitos reservados - Szymanski</Text>
+                <Text style={{ color: '#919191' }}>© 2025 Todos os direitos reservados - Szymanski</Text>
             </View>
 
 

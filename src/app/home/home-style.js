@@ -40,8 +40,10 @@ const HomeStyle = StyleSheet.create({
     ////////////////////////
     // Wrapper
     homeWrapper:{
+        paddingTop: 15,
+        paddingBottom: 50,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         width: '100%',
         height: '100%',
     },

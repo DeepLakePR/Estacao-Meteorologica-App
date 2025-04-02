@@ -35,7 +35,7 @@ export default function Home() {
     const user = JSON.parse(useLocalSearchParams().user);
     const userName = user.userName;
 
-    if(user === null || user === undefined){
+    if (user === null || user === undefined) {
         router.push('login');
 
     }
@@ -43,10 +43,10 @@ export default function Home() {
     // Previsions
     const PrevisionsDatabaseRef = collection(Database, "previsions");
 
-    const [ modalCreatePrevision, setModalCreatePrevision ] = useState(false);
-    const [ newPrevisionTitle, setNewPrevisionTitle ] = useState(null);
+    const [modalCreatePrevision, setModalCreatePrevision] = useState(false);
+    const [newPrevisionTitle, setNewPrevisionTitle] = useState(null);
 
-    const [ allPrevisions, setNewPrevision ] = useState([]);
+    const [allPrevisions, setNewPrevision] = useState([]);
 
     // Get Date Local Time
     const CurrentHours = new Date().getHours();
@@ -54,7 +54,7 @@ export default function Home() {
     var dateLocalTime = CurrentHours >= 5 && CurrentHours <= 12 ? 'Bom dia,' : CurrentHours >= 13 && CurrentHours <= 17 ? 'Boa tarde,' : 'Boa noite,'
 
     // Get All Previsions
-    async function getAllPrevisions(){
+    async function getAllPrevisions() {
 
         const finalDataPrevisions = [];
 
@@ -62,7 +62,16 @@ export default function Home() {
 
         await getDocs(getPrevisionsQuery).then((querySnapshot) => {
             querySnapshot.docs.forEach((doc) => {
-                finalDataPrevisions.push(doc);
+
+                let previsionYear = doc.data().createdAt.toDate().getFullYear().toString();
+
+                if (!finalDataPrevisions[previsionYear]){
+                    finalDataPrevisions[previsionYear] = [];
+                    finalDataPrevisions[previsionYear].push({title: 'Previsões de ' + previsionYear});
+
+                }
+
+                finalDataPrevisions[previsionYear].push(doc);
 
             });
         })
@@ -72,10 +81,10 @@ export default function Home() {
     }
 
     // Real Time Update Previsions
-    async function realTimeUpdatePrevisions(){
-        
+    async function realTimeUpdatePrevisions() {
+
         const realTimeUpdateQuery = query(PrevisionsDatabaseRef);
-        await onSnapshot(realTimeUpdateQuery, ()=>{
+        await onSnapshot(realTimeUpdateQuery, () => {
             getAllPrevisions();
 
         });
@@ -83,12 +92,12 @@ export default function Home() {
     }
 
     // Create New Prevision
-    async function createPrevision(){
+    async function createPrevision() {
 
         Keyboard.dismiss();
 
         // Check if is empty
-        if(newPrevisionTitle === null || newPrevisionTitle.trim() === ''){
+        if (newPrevisionTitle === null || newPrevisionTitle.trim() === '') {
             return alert("Insira o nome da nova previsão.");
         }
 
@@ -104,14 +113,14 @@ export default function Home() {
     }
 
     // Go To Prevision Info
-    function goToPrevisionInfo(previsionInfo){
+    function goToPrevisionInfo(previsionInfo) {
         router.push(`prevision?user=${JSON.stringify(user)}&previsionId=${previsionInfo.id}`);
         return true;
 
     }
 
     // Call Get All Previsions Async Function
-    useEffect(()=>{
+    useEffect(() => {
         getAllPrevisions();
         realTimeUpdatePrevisions();
 
@@ -143,10 +152,10 @@ export default function Home() {
 
                         <Text style={HomeStyle.modalCreatePrevisionTitle}>Criar Previsão</Text>
 
-                        <TextInput style={HomeStyle.modalCreatePrevisionInput} onChangeText={(newText)=> setNewPrevisionTitle(newText)} placeholder={"Nome da Previsão"} placeholderTextColor={'#a8a8a8'} />
+                        <TextInput style={HomeStyle.modalCreatePrevisionInput} onChangeText={(newText) => setNewPrevisionTitle(newText)} placeholder={"Nome da Previsão"} placeholderTextColor={'#a8a8a8'} />
 
                         <TouchableOpacity style={HomeStyle.modalCreatePrevisionSubmit} onPress={() => createPrevision()}>
-                            <Text style={{...HomeStyle.modalCreatePrevisionText, fontSize: 17}}>Criar</Text>
+                            <Text style={{ ...HomeStyle.modalCreatePrevisionText, fontSize: 17 }}>Criar</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -162,59 +171,65 @@ export default function Home() {
 
             <View style={HomeStyle.homeWrapper}>
 
-                <Collapse>
+                {
 
-                    <CollapseHeader>
-                        <View style={HomeStyle.homePrevisionBox}>
-                            
+                    allPrevisions.map(function(prevision){
 
-                            <Image style={HomeStyle.homePrevisionBoxIcon} source={require('../../../assets/home/prevision-box-icon.png')} />
+                        let previsionsList = prevision.slice(1, prevision.length);
 
-                            <Text style={HomeStyle.homePrevisionBoxTitle}>Previsões de 2024</Text>
-                        </View>
-                    </CollapseHeader>
+                        return <Collapse>
 
-                    <CollapseBody style={{paddingBottom: 50}}>
-                        <FlatList
-                        style={HomeStyle.homePrevisionsList}
-                        contentContainerStyle={{alignItems: 'center', paddingBottom: 70}} 
-                        data={allPrevisions}
-                        keyExtractor={item => item.id}
-                        renderItem={({ item }) => {
+                            <CollapseHeader>
+                                <View style={HomeStyle.homePrevisionBox}>
 
-                            return <View style={{...HomeStyle.homePrevisionBox, padding: 9}} previsionId={item.id}>
+                                    <Image style={HomeStyle.homePrevisionBoxIcon} source={require('../../../assets/home/prevision-box-icon.png')} />
 
-                                <Image style={HomeStyle.homePrevisionBoxIcon} source={require('../../../assets/home/prevision-box-icon.png')} />
+                                    <Text style={HomeStyle.homePrevisionBoxTitle}>{prevision[0].title}</Text>
 
-                                <Text style={HomeStyle.homePrevisionBoxTitle}>{item.data().previsionTitle}</Text>
+                                </View>
+                            </CollapseHeader>
 
-                                <TouchableOpacity style={HomeStyle.homePrevisionBoxButton} onPress={()=> goToPrevisionInfo(item)}>
-                                    <Entypo name="dots-three-horizontal" size={26} color="black" />
-                                </TouchableOpacity>
+                            <CollapseBody style={{ paddingBottom: 50 }}>
+                                <FlatList
+                                    style={HomeStyle.homePrevisionsList}
+                                    contentContainerStyle={{ alignItems: 'center', paddingBottom: 150 }}
+                                    data={previsionsList}
+                                    keyExtractor={item => item.id}
+                                    renderItem={({ item }) => {
 
-                            </View>
+                                        return <View style={{ ...HomeStyle.homePrevisionBox, padding: 9 }} previsionId={item.id}>
 
-                        }}
-                    />
-                    </CollapseBody>
+                                            <Image style={HomeStyle.homePrevisionBoxIcon} source={require('../../../assets/home/prevision-box-icon.png')} />
 
-                </Collapse>
+                                            <Text style={HomeStyle.homePrevisionBoxTitle}>{item.data().previsionTitle}</Text>
 
-                
+                                            <TouchableOpacity style={HomeStyle.homePrevisionBoxButton} onPress={() => goToPrevisionInfo(item)}>
+                                                <Entypo name="dots-three-horizontal" size={26} color="black" />
+                                            </TouchableOpacity>
+
+                                        </View>
+
+                                    }}
+                                />
+                            </CollapseBody>
+
+                        </Collapse>
+
+                    })
+
+                }
 
             </View>
 
-            
-
             {
-                user.isAdministrator 
-                ?
-                <TouchableOpacity style={HomeStyle.homeCreatePrevisionButton} 
-                onPress={()=>setModalCreatePrevision(!modalCreatePrevision)}>
-                    <AntDesign name="plus" size={24} color="black" />
-                </TouchableOpacity>
-                :
-                '' 
+                user.isAdministrator
+                    ?
+                    <TouchableOpacity style={HomeStyle.homeCreatePrevisionButton}
+                        onPress={() => setModalCreatePrevision(!modalCreatePrevision)}>
+                        <AntDesign name="plus" size={24} color="black" />
+                    </TouchableOpacity>
+                    :
+                    ''
             }
 
         </SafeAreaView>

@@ -28,7 +28,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import PrevisionStyle from "./prevision-style.js";
 
 // Icons
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 
 // XLSX
 import * as XLSX from "xlsx";
@@ -60,7 +60,8 @@ export default function Prevision() {
         "Pressão",
         "Velocidade Km/h",
         "Direção",
-        "Assinatura"
+        "Assinatura",
+        <FontAwesome style={{textAlign: 'center'}} name="gear" size={20} color="white" />
     ];
 
     const previsionTableWidthColumns = [
@@ -76,7 +77,8 @@ export default function Prevision() {
         75, // Pressão
         95, // Velocidade Km/h
         70, // Direção
-        90 // Assinatura
+        90, // Assinatura
+        40 // Edit
     ]
 
     // Prevision
@@ -284,6 +286,9 @@ export default function Prevision() {
                     anotationDoc.data().velocidadeKm,
                     anotationDoc.data().direcao,
                     anotationDoc.data().anotationCreatedBy,
+                    <TouchableOpacity style={{alignItems: 'center'}} onPress={()=> console.log(anotationDoc.id)}>
+                        <AntDesign name="edit" size={22} color="white" />
+                    </TouchableOpacity>
 
                 ]);
 
@@ -401,16 +406,10 @@ export default function Prevision() {
     // Clean and Convert Single Information
     function cleanAndConvertToNumber(value) {
 
-        console.log('teste');
-        console.log(value);
-
         let cleanedValue = 0;
 
         if (value)
             cleanedValue = value.replace(/[^\d.-]/g, '');
-
-        //console.log(cleanedValue);
-        //console.log(parseFloat(cleanedValue));
 
         return parseFloat(cleanedValue);
 
@@ -551,9 +550,6 @@ export default function Prevision() {
                                             timeZoneName={'America/Sao_Paulo'}
                                             onChange={(_, newDate) => {
                                                 setShowDatePickerModalCreate(false);
-
-                                                console.log(newDate);
-
                                                 setCreateCurrentDateTimePicker(newDate);
                                             }}
                                         />
@@ -569,9 +565,6 @@ export default function Prevision() {
                                             timeZoneName={'America/Sao_Paulo'}
                                             onChange={(_, newTime) => {
                                                 setShowHourPickerModalCreate(false);
-
-                                                console.log(newTime);
-
                                                 setCreateCurrentDateTimePicker(newTime);
                                             }}
                                         />

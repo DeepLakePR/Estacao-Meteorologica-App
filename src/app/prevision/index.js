@@ -25,7 +25,7 @@ import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-ta
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 // Style
-import PrevisionStyle from "./prevision-style.js";
+import PrevisionStyle from "../../styles/prevision-style.js";
 
 // Icons
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
@@ -35,7 +35,7 @@ import * as XLSX from "xlsx";
 import { writeAsStringAsync, StorageAccessFramework, EncodingType } from "expo-file-system";
 
 // Firestore
-import { Database } from '../firebase.initialize.js';
+import { Database } from '../../services/firebase.initialize.js';
 import { collection, getDoc, getDocs, doc, addDoc, query, orderBy, onSnapshot, where } from 'firebase/firestore'
 
 // Variables
@@ -88,7 +88,7 @@ export default function Prevision() {
     const [previsionAnotationsInfo, setPrevisionAnotationsInfo] = useState([]);
 
     if (previsionId === null || previsionId === undefined) {
-        router.push(`home?user=${JSON.stringify(user)}`);
+        router.push(`/(tabs)/home?user=${JSON.stringify(user)}`);
 
     }
 
@@ -589,7 +589,7 @@ export default function Prevision() {
 
             <View style={PrevisionStyle.previsionHeader}>
                 <TouchableOpacity style={PrevisionStyle.backToHomeButton} onPress={() =>
-                    router.push(`home?user=${JSON.stringify(user)}`)}>
+                    router.push(`/(tabs)/home?user=${JSON.stringify(user)}`)}>
                     <AntDesign name="left" size={24} color="black" />
                 </TouchableOpacity>
 

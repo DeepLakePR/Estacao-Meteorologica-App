@@ -13,10 +13,10 @@ import { router } from 'expo-router';
 
 import * as SecureStore from 'expo-secure-store';
 
-import LoginStyle from './login-style.js';
+import LoginStyle from '../../styles/login-style.js';
 
 // Firestore
-import FirebaseApp from '../firebase.initialize.js';
+import FirebaseApp from '../../services/firebase.initialize.js';
 import { getFirestore, collection, where, query, getDocs } from 'firebase/firestore'
 
 const FirestoreDatabase = getFirestore(FirebaseApp);
@@ -44,7 +44,7 @@ export default function Login() {
         let userInfoResult = await SecureStore.getItemAsync('userInfo');
         
         if(userInfoResult){
-            router.push(`home?user=${userInfoResult}`);
+            router.push(`/(tabs)/home?user=${userInfoResult}`);
 
         }
 
@@ -111,7 +111,7 @@ export default function Login() {
             }));
 
             setTimeout(() => {
-                router.push(`home?user=${JSON.stringify(userData)}`);
+                router.push(`/(tabs)/home?user=${JSON.stringify(userData)}`);
 
             }, 2000);
 
@@ -141,7 +141,7 @@ export default function Login() {
 
             <StatusBar style="dark" hidden={false} translucent={true} backgroundColor="#e3e3e3" />
 
-            <Image style={LoginStyle.loginIcon} source={require("../../../assets/login/login-asset.png")} />
+            <Image style={LoginStyle.loginIcon} source={require("../../../assets/login-asset.png")} />
 
 
             <Text style={LoginStyle.loginTitle}>Insira as Informações {'\n'} de Acesso</Text>

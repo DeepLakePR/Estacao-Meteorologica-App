@@ -1,26 +1,25 @@
 import { useState, useEffect } from 'react';
 import { LogBox } from 'react-native';
-import { router } from 'expo-router';
+import { router, Tabs } from 'expo-router';
 import { Stack } from 'expo-router/stack';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import * as SecureStore from 'expo-secure-store';
 
 const isProductionMode = false;
 
 // Firestore
-import FirebaseApp from './firebase.initialize.js';
+import FirebaseApp from '../services/firebase.initialize.js';
 import { getFirestore, collection, where, query, getDocs } from 'firebase/firestore'
 
 const FirestoreDatabase = getFirestore(FirebaseApp);
 
+// Root App
 export default function RootApp() {
 
   var UsersTable = collection(FirestoreDatabase, 'users');
 
   LogBox.ignoreAllLogs(isProductionMode);
-  
-  //// User 
-  // Object Format: {'userName': 'Guilherme', 'password': 'Phone-Number (Number)', 'userCMGRegister': 'Number', 'sessionEndDate': 'Date'}
 
   // User Logging
   async function userLogging(){
@@ -84,10 +83,8 @@ export default function RootApp() {
 
             let sendedUserInfoResult = JSON.stringify(userDoc.docs[0].data());
 
-            console.log(sendedUserInfoResult);
-
             // Go To Home
-            router.push(`home?user=${sendedUserInfoResult}`);
+            router.push(`(tabs)/home?user=${sendedUserInfoResult}`);
             return;
   
           }
@@ -119,10 +116,11 @@ export default function RootApp() {
 
         <Stack.Screen name="prevision/index" options={{ title: "Previsão" }} />
 
-        <Stack.Screen name="home/index" options={{ title: "Home" }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
     </Stack>
 
   );
 
 }
+

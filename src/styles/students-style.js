@@ -8,7 +8,7 @@ const StudentsStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         flex: 1,
-        backgroundColor: '#e3e3e3',
+        backgroundColor: '#DCE8FF', //#e3e3e3
     },
 
     studentsHeader: {
@@ -29,38 +29,22 @@ const StudentsStyle = StyleSheet.create({
     ////////////////////////
     // Wrapper
     studentsWrapper: {
-        paddingBottom: 50,
+        paddingTop: 25,
         width: '100%',
         height: '100%',
     },
 
-    studentsWrapperHeader:{
-        position: 'relative',
-        width: '100%',
-        textAlign: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-
     ////////////////////////
-    // Previsions List
-    studentsPrevisionsList: {
-        width: '100%',
-        height: '100%',
-        paddingTop: 16,
-    },
-
-    ////////////////////////
-    // Prevision Single Box
-    studentsPrevisionBox: {
+    // Students Box Single
+    studentsBoxSingle: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         minWidth: '90%',
         marginBottom: 16,
-        padding: 12,
+        padding: 16,
         borderRadius: 6,
-        backgroundColor: '#DCE8FF',
+        backgroundColor: '#5C7FBF',
         position: 'relative',
 
         // Android Shadow
@@ -74,25 +58,12 @@ const StudentsStyle = StyleSheet.create({
 
     },
 
-    studentsPrevisionBoxCollapseBody: {
-        paddingBottom: 12,
-        paddingLeft: 12, 
-        paddingRight: 12, 
-        flexGrow: 0, 
-        flexShrink: 1
-    },
-
-    studentsPrevisionBoxIcon: {
-        marginRight: 16,
-        width: 34,
-        height: 34,
-    },
-
-    studentsPrevisionBoxTitle: {
+    studentsBoxSingleText: {
         fontSize: 16,
+        color: 'white',
     },
 
-    studentsPrevisionBoxButton: {
+    studentsBoxSingleButton: {
         paddingTop: 8,
         paddingBottom: 8,
         paddingLeft: 12,
@@ -102,12 +73,12 @@ const StudentsStyle = StyleSheet.create({
     },
 
     ////////////////////////
-    // Create Prevision Button
-    studentsCreatePrevisionButton: {
+    // Create Student Button
+    studentsCreateStudentButton: {
         position: 'absolute',
         right: 12,
         transform: [{ translateX: parseFloat('-12%') }],
-        backgroundColor: '#3B6BA5',
+        backgroundColor: '#668cd1',
         padding: 6,
         borderRadius: 8,
 

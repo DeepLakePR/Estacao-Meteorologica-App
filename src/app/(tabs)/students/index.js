@@ -16,7 +16,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import StudentsStyle from "../../../styles/students-style.js";
 
 // Icons
-import { AntDesign, Entypo } from '@expo/vector-icons';
+import { AntDesign, Entypo, FontAwesome } from '@expo/vector-icons';
 
 // Firestore
 import { Database } from '../../../services/firebase.initialize.js';
@@ -38,14 +38,135 @@ export default function Students() {
                     </Text>
 
                     {/* Create Student */}
-                    <TouchableOpacity style={StudentsStyle.studentsCreatePrevisionButton}
+                    <TouchableOpacity style={StudentsStyle.studentsCreateStudentButton}
                         >
                         <AntDesign name="plus" size={24} color="white" />
                     </TouchableOpacity>
                 </View>
 
                 {/* List Students */}
-                <ScrollView style={StudentsStyle.studentsWrapper} contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start' }}>
+                <ScrollView style={StudentsStyle.studentsWrapper} contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 70 }}>
+
+                    {/* Student Box */}
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={StudentsStyle.studentsBoxSingle}>
+                        <Text style={StudentsStyle.studentsBoxSingleText}>student.name | student.cgm</Text>
+
+                        <TouchableOpacity style={StudentsStyle.studentsBoxSingleButton}>
+                            <FontAwesome name="gear" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
 
                 </ScrollView>
 

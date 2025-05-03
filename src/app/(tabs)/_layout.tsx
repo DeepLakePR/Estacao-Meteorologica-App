@@ -1,4 +1,4 @@
-import { Tabs, router, useGlobalSearchParams } from 'expo-router';
+import { Tabs, useGlobalSearchParams } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { View } from 'react-native';
 

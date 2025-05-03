@@ -139,13 +139,13 @@ export default function Home() {
                     transparent={true}
                     visible={modalCreatePrevision}
                     onRequestClose={() => {
-                        setModalCreatePrevision(!modalCreatePrevision);
+                        setModalCreatePrevision(false);
                     }}>
 
                     <View style={HomeStyle.modalCreatePrevisionContainer}>
                         <View style={HomeStyle.modalCreatePrevisionView}>
 
-                            <TouchableOpacity style={HomeStyle.modalCreatePrevisionCloseButton} onPress={() => setModalCreatePrevision(!modalCreatePrevision)}>
+                            <TouchableOpacity style={HomeStyle.modalCreatePrevisionCloseButton} onPress={() => setModalCreatePrevision(false)}>
                                 <Text style={HomeStyle.modalCreatePrevisionText}>X</Text>
                             </TouchableOpacity>
 
@@ -180,6 +180,7 @@ export default function Home() {
                             user.isAdministrator
                                 ?
                                 <TouchableOpacity style={HomeStyle.homeCreatePrevisionButton}
+                                onPress={() => setModalCreatePrevision(true)}
                                     >
                                     <AntDesign name="plus" size={24} color="white" />
                                 </TouchableOpacity>

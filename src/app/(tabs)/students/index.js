@@ -31,8 +31,44 @@ export default function Students() {
 
                 <StatusBar style="light" backgroundColor="#3B6BA5" />
 
+                {/* Modal Creation & Edit */}
+                <Modal
+                    statusBarTranslucent={true}
+                    animationType="fade"
+                    transparent={true}
+                    visible={true}
+                    onRequestClose={()=>{}}>
+
+                        <View style={StudentsStyle.modalStudentsManagementContainer}>
+                            <View style={StudentsStyle.modalStudentsManagementView}>
+
+                                <TouchableOpacity style={StudentsStyle.modalStudentsManagementButton}>
+                                    <AntDesign name="close" size={24} color="black" />
+                                </TouchableOpacity>
+                            
+                                <Text style={StudentsStyle.modalStudentsManagementTitle}>
+                                    {/*isEdit ? 'Editar Estudante' : 'Criar Estudante'*/} 
+                                    Criar Estudante
+                                </Text>
+
+                                <TextInput style={StudentsStyle.modalStudentsManagementInput} maxLength={75} placeholder={"Nome"} placeholderTextColor={"#ccc"} />
+
+                                <TextInput style={StudentsStyle.modalStudentsManagementInput} maxLength={75} placeholder={"CGM"} placeholderTextColor={"#ccc"} />
+
+                                <TextInput style={StudentsStyle.modalStudentsManagementInput} maxLength={75} placeholder={"Senha"} placeholderTextColor={"#ccc"} />
+
+                                <TouchableOpacity style={StudentsStyle.modalStudentsManagementButton}>
+                                    <Text style={StudentsStyle.modalStudentsManagementButtonText}>
+                                        Salvar
+                                    </Text>
+                                </TouchableOpacity>
+
+                            </View>
+                        </View>
+                </Modal>
+
                 {/* Students Header */}
-                <View style={StudentsStyle.studentsHeader}>
+                <View style={StudentsStyle.header}>
                     <Text style={StudentsStyle.headerText}>
                         Estudantes
                     </Text>
@@ -45,7 +81,7 @@ export default function Students() {
                 </View>
 
                 {/* List Students */}
-                <ScrollView style={StudentsStyle.studentsWrapper} contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 70 }}>
+                <ScrollView style={StudentsStyle.studentsListWrapper} contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 70 }}>
 
                     {/* Student Box */}
                     <View style={StudentsStyle.studentsBoxSingle}>
@@ -170,7 +206,7 @@ export default function Students() {
 
                 </ScrollView>
 
-            </SafeAreaView >
+            </SafeAreaView>
         </SafeAreaProvider>
     );
 

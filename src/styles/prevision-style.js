@@ -11,7 +11,7 @@ const PrevisionStyle = StyleSheet.create({
     },
 
     // Prevision Header
-    previsionHeader: {
+    header: {
         padding: 10,
         position: 'relative',
         alignItems: 'center',

@@ -22,7 +22,7 @@ const HomeStyle = StyleSheet.create({
         opacity: 0.8
     },
 
-    homeHeader: {
+    header: {
         width: '100%',
         height: 50,
         paddingLeft: 15,

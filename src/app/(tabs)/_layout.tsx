@@ -1,6 +1,6 @@
 import { Tabs, useGlobalSearchParams } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 
 export default function TabsLayout() {
     
@@ -13,16 +13,21 @@ export default function TabsLayout() {
             tabBarActiveTintColor: '#38BDF8',
             tabBarInactiveTintColor: '#CCC',
             headerShown: false,
+            tabBarHideOnKeyboard: true,
             tabBarStyle: {
                 backgroundColor: 'transparent',
                 position: 'absolute',
+                bottom: 0,
                 borderTopWidth: 0,        
                 elevation: 0,
+                paddingBottom: Platform.OS === 'ios' ? 15 : 15,
+                height: Platform.OS === 'ios' ? 70 : 56,
                 display: userIsAdministrator ? 'flex' : 'none',
             },
             tabBarBackground: () => (
                 <View style={{ backgroundColor: 'transparent', flex: 1 }} />
             ),
+            animation: 'shift',
         }}>
 
             <Tabs.Screen name="home/index"
@@ -39,7 +44,7 @@ export default function TabsLayout() {
             />
             <Tabs.Screen name="announcements/index"
                 options={{
-                    title: 'Avisos',
+                    title: 'Comunicados',
                     tabBarIcon: ({ color }) => <FontAwesome5 name="bullhorn" size={20} color={color} />,
                 }}
             />

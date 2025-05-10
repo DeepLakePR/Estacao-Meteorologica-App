@@ -431,6 +431,7 @@ export default function Prevision() {
             <StatusBar style="light" backgroundColor="#262626" />
 
             <Modal
+                statusBarTranslucent={true}
                 animationType="fade"
                 transparent={true}
                 visible={modalCreateAnotation}
@@ -587,7 +588,7 @@ export default function Prevision() {
 
             </Modal>
 
-            <View style={PrevisionStyle.previsionHeader}>
+            <View style={PrevisionStyle.header}>
                 <TouchableOpacity style={PrevisionStyle.backToHomeButton} onPress={() =>
                     router.push(`/(tabs)/home?user=${JSON.stringify(user)}`)}>
                     <AntDesign name="left" size={24} color="black" />

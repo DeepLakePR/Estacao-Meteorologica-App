@@ -135,6 +135,7 @@ export default function Home() {
 
                 {/* Create Prevision */}
                 <Modal
+                    statusBarTranslucent={true}
                     animationType="fade"
                     transparent={true}
                     visible={modalCreatePrevision}
@@ -163,7 +164,7 @@ export default function Home() {
                 </Modal>
 
                 {/* Header */}
-                <View style={HomeStyle.homeHeader}>
+                <View style={HomeStyle.header}>
                     <Text style={HomeStyle.headerText}>
                         {dateLocalTime} <Text style={{ color: "#38BDF8", fontWeight: "bold" }}>{userName}</Text>
                     </Text>
@@ -239,7 +240,7 @@ export default function Home() {
 
                 </ScrollView>
 
-            </SafeAreaView >
+            </SafeAreaView>
         </SafeAreaProvider>
 
     );

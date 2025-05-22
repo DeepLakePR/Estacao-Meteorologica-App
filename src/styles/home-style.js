@@ -8,7 +8,7 @@ const HomeStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         flex: 1,
-        backgroundColor: '#e3e3e3',
+        backgroundColor: '#DCE8FF',
     },
 
     // Background Image
@@ -192,7 +192,7 @@ const HomeStyle = StyleSheet.create({
         width: '60%',
         padding: 8,
         textAlign: 'center',
-        backgroundColor: '#e3e3e3',
+        backgroundColor: '#DCE8FF',
         borderRadius: 4,
     },
 

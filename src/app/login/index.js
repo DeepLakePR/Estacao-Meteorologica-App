@@ -139,7 +139,7 @@ export default function Login() {
 
         <View style={LoginStyle.mainContainer}>
 
-            <StatusBar style="dark" hidden={false} translucent={true} backgroundColor="#e3e3e3" />
+            <StatusBar style="dark" hidden={false} translucent={true} backgroundColor="#DCE8FF" />
 
             <Image style={LoginStyle.loginIcon} source={require("../../../assets/login-asset.png")} />
 

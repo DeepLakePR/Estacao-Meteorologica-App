@@ -6,16 +6,17 @@ const PrevisionStyle = StyleSheet.create({
     // Main Container
     mainContainer: {
         flex: 1,
-        backgroundColor: '#e3e3e3',
-        paddingTop: 15,
+        backgroundColor: '#DCE8FF',
     },
 
     // Prevision Header
     header: {
         padding: 10,
+        marginBottom: 15,
         position: 'relative',
         alignItems: 'center',
         width: '100%',
+        backgroundColor: '#3B6BA5'
     },
 
     // Back To Home Button
@@ -28,6 +29,7 @@ const PrevisionStyle = StyleSheet.create({
 
     // Prevision Title
     previsionTitle: {
+        color: 'white',
         fontSize: 21,
         fontWeight: 'bold',
         textAlign: 'center',
@@ -105,26 +107,26 @@ const PrevisionStyle = StyleSheet.create({
     },
 
     ////////////////////////
-    // Generate Buttons Wrapper
-    generateButtonsWrapper: {
+    // Buttons Wrapper
+    buttonsWrapper: {
         alignItems: 'center',
         justifyContent: 'center',
     },
 
     createAnotationButton: {
         width: '70%',
-        backgroundColor: '#2da2cc',
+        backgroundColor: '#38BDF8',
         padding: 8,
         marginBottom: 30,
     },
 
-    generateButtonsTitle: {
+    buttonsGenerateTitle: {
         fontSize: 18,
         marginBottom: 15
     },
 
-    // Buttons
-    generateButtonsView: {
+    // Buttons Generate
+    buttonsGenerate: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -135,15 +137,15 @@ const PrevisionStyle = StyleSheet.create({
         paddingRight: 10,
     },
 
-    generateButton: {
+    buttonPrevision: {
         padding: 6,
         width: '30%',
-        backgroundColor: '#252525',
+        backgroundColor: '#3B6BA5',
         color: 'white',
         borderRadius: 5
     },
 
-    generateButtonText: {
+    buttonPrevisionText: {
         color: 'white',
         textAlign: 'center'
     },
@@ -217,7 +219,7 @@ const PrevisionStyle = StyleSheet.create({
         width: '60%',
         padding: 8,
         textAlign: 'center',
-        backgroundColor: '#e3e3e3',
+        backgroundColor: '#DCE8FF',
         borderRadius: 4,
     },
 

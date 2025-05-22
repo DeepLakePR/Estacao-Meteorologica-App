@@ -10,16 +10,13 @@ import {
     Modal,
     ScrollView,
     ActivityIndicator,
-    SafeAreaView
 } from "react-native";
 
-import {
-    useSafeAreaInsets
-} from "react-native-safe-area-context";
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { router, useLocalSearchParams } from "expo-router";
 
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
+import { Table, Row, Rows } from 'react-native-table-component';
 
 // Date Time Picker
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -61,7 +58,7 @@ export default function Prevision() {
         "Velocidade Km/h",
         "Direção",
         "Assinatura",
-        <FontAwesome style={{textAlign: 'center'}} name="gear" size={20} color="white" />
+        <FontAwesome style={{ textAlign: 'center' }} name="gear" size={20} color="white" />
     ];
 
     const previsionTableWidthColumns = [
@@ -286,7 +283,7 @@ export default function Prevision() {
                     anotationDoc.data().velocidadeKm,
                     anotationDoc.data().direcao,
                     anotationDoc.data().anotationCreatedBy,
-                    <TouchableOpacity style={{alignItems: 'center'}} onPress={()=> console.log(anotationDoc.id)}>
+                    <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => console.log(anotationDoc.id)}>
                         <AntDesign name="edit" size={22} color="white" />
                     </TouchableOpacity>
 
@@ -382,20 +379,11 @@ export default function Prevision() {
     // Set New Prevision Anotation
     function setNewPrevisionAnotationInput(newValue, finalCombination, property) {
 
-        if (newValue === null || newValue === undefined) {
+        if (!newValue || !property)
             return false;
 
-        }
-
-        if (property === null || property === undefined) {
-            return false;
-
-        }
-
-        if (finalCombination !== null) {
+        if (finalCombination)
             newValue = newValue + finalCombination
-
-        }
 
         setNewPrevisionAnotation({
             ...newPrevisionAnotation,
@@ -425,281 +413,287 @@ export default function Prevision() {
     // Return
     return (
 
-        <ScrollView style={PrevisionStyle.mainContainer} contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start' }}
-            nestedScrollEnabled={true}>
+        <SafeAreaProvider style={{ flex: 1 }}>
+            <SafeAreaView style={PrevisionStyle.mainContainer} edges={['top']}>
 
-            <StatusBar style="light" backgroundColor="#262626" />
+                <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start' }}
+                    nestedScrollEnabled={true}>
 
-            <Modal
-                statusBarTranslucent={true}
-                animationType="fade"
-                transparent={true}
-                visible={modalCreateAnotation}
-                onRequestClose={() => {
-                    setModalCreateAnotation(!modalCreateAnotation);
-                }}>
+                    <StatusBar style="light" backgroundColor="#3B6BA5" translucent={true} />
 
-                <View style={PrevisionStyle.modalCreateAnotationContainer}>
-                    <View style={PrevisionStyle.modalCreateAnotationView}>
+                    <Modal
+                        statusBarTranslucent={true}
+                        animationType="fade"
+                        transparent={true}
+                        visible={modalCreateAnotation}
+                        onRequestClose={() => {
+                            setModalCreateAnotation(!modalCreateAnotation);
+                        }}>
 
-                        <TouchableOpacity style={PrevisionStyle.modalCreateAnotationCloseButton} onPress={() => setModalCreateAnotation(!modalCreateAnotation)}>
-                            <Text style={PrevisionStyle.modalCreateAnotationText}>X</Text>
+                        <View style={PrevisionStyle.modalCreateAnotationContainer}>
+                            <View style={PrevisionStyle.modalCreateAnotationView}>
+
+                                <TouchableOpacity style={PrevisionStyle.modalCreateAnotationCloseButton} onPress={() => setModalCreateAnotation(!modalCreateAnotation)}>
+                                    <Text style={PrevisionStyle.modalCreateAnotationText}>X</Text>
+                                </TouchableOpacity>
+
+                                <Text style={PrevisionStyle.modalCreateAnotationTitle}>
+                                    Insira as informações da Estação Meteorológica
+                                </Text>
+
+
+                                <View style={PrevisionStyle.modalCreateAnotationInputsWrapper}>
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"Temp Seco"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaSeco')} />
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"Temp Úmido"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaUmido')} />
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"UR Tabela"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'urTabela')} />
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"Temp Mínima"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaMin')} />
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"Temp Máxima"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaMax')} />
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"Precipitação"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, 'mm', 'precipitacao')} />
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"Céu WeWe"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'ceuWeWe')} />
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"Solo 0900"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'solo0900')} />
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"Pressão"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, 'hPa', 'pressao')} />
+
+                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
+                                        placeholder={"Velocidade Km/h"} placeholderTextColor={mainInputsPHTextColor}
+                                        inputMode={'numeric'}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, 'Km', 'velocidadeKm')} />
+
+                                    <TextInput style={{ ...PrevisionStyle.modalCreateAnotationInput, width: '89%' }}
+                                        placeholder={"Direção"} placeholderTextColor={mainInputsPHTextColor}
+                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'direcao')} />
+
+                                    <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
+                                        onPress={() => setShowDatePickerModalCreate(true)}>
+                                        <Text style={{ textAlign: 'center' }}>
+                                            {
+                                                createCurrentDateTimePicker.toLocaleDateString(
+                                                    'pt-BR',
+                                                    {
+                                                        year: 'numeric',
+                                                        month: '2-digit',
+                                                        day: '2-digit',
+                                                        timeZone: 'America/Sao_Paulo'
+                                                    }
+                                                )
+                                            }
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
+                                        onPress={() => { setShowHourPickerModalCreate(true); }}>
+                                        <Text style={{ textAlign: 'center' }}>
+                                            {
+                                                createCurrentDateTimePicker.toLocaleTimeString(
+                                                    'pt-BR',
+                                                    {
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                        timeZone: 'America/Sao_Paulo'
+                                                    }
+                                                )
+                                            }
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <SafeAreaView>
+                                        {
+                                            showDatePickerModalCreate && (
+                                                <DateTimePicker
+                                                    value={createCurrentDateTimePicker}
+                                                    mode={'date'}
+                                                    display={"spinner"}
+                                                    is24Hour={true}
+                                                    timeZoneName={'America/Sao_Paulo'}
+                                                    onChange={(_, newDate) => {
+                                                        setShowDatePickerModalCreate(false);
+                                                        setCreateCurrentDateTimePicker(newDate);
+                                                    }}
+                                                />
+                                            )}
+
+                                        {
+                                            showHourPickerModalCreate && (
+                                                <DateTimePicker
+                                                    value={createCurrentDateTimePicker}
+                                                    mode={'time'}
+                                                    display={"clock"}
+                                                    is24Hour={true}
+                                                    timeZoneName={'America/Sao_Paulo'}
+                                                    onChange={(_, newTime) => {
+                                                        setShowHourPickerModalCreate(false);
+                                                        setCreateCurrentDateTimePicker(newTime);
+                                                    }}
+                                                />
+                                            )}
+                                    </SafeAreaView>
+
+                                </View>
+
+
+                                <TouchableOpacity style={PrevisionStyle.modalCreateAnotationSubmit} onPress={() => createAnotation()}>
+                                    <Text style={{ ...PrevisionStyle.modalCreateAnotationText, fontSize: 17 }}>Criar</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={{ ...PrevisionStyle.previsionLoadingView, display: previsionLoadingIconDisplay }}>
+                                <ActivityIndicator size="large" animation={true} color={"white"}
+                                    style={PrevisionStyle.previsionLoadingIcon} />
+                            </View>
+                        </View>
+
+                    </Modal>
+
+                    <View style={PrevisionStyle.header}>
+                        <TouchableOpacity style={PrevisionStyle.backToHomeButton} onPress={() =>
+                            router.push(`/(tabs)/home?user=${JSON.stringify(user)}`)}>
+                            <AntDesign name="left" size={24} color="white" />
                         </TouchableOpacity>
 
-                        <Text style={PrevisionStyle.modalCreateAnotationTitle}>
-                            Insira as informações da Estação Meteorológica
+                        <Text style={PrevisionStyle.previsionTitle}>
+                            {previsionInfo.previsionTitle}
+                        </Text>
+                    </View>
+
+                    <View style={PrevisionStyle.previsionTableWrapper}>
+
+                        <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}
+                            nestedScrollEnabled={true}>
+
+                            <ScrollView
+                                horizontal={true} showsHorizontalScrollIndicator={true} showsVerticalScrollIndicator={true}
+                                nestedScrollEnabled={true}
+                                style={PrevisionStyle.previsionTableScrollView}>
+
+                                <Table borderStyle={{ borderWidth: 1, borderColor: '#d9d9d9' }}>
+
+                                    <Row data={HeadTable} style={PrevisionStyle.previsionTableHead} textStyle={PrevisionStyle.previsionTableText} widthArr={previsionTableWidthColumns} />
+
+                                    <Rows data={previsionAnotationsInfo} style={PrevisionStyle.previsionTableRow} textStyle={PrevisionStyle.previsionTableText} widthArr={previsionTableWidthColumns} />
+
+                                </Table>
+
+                            </ScrollView>
+
+                        </ScrollView>
+
+                    </View>
+
+                    <View style={PrevisionStyle.previsionMonthlyAverage}>
+
+                        <Text style={PrevisionStyle.previsionMonthlyAverageTitle}>Médias Mensais:</Text>
+
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Temp Seco: <Text style={{ fontWeight: '900' }}>{Average_TempSeco}ºC</Text>
+                        </Text>
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Temp Úmido: <Text style={{ fontWeight: '900' }}>{Average_TempUmido}ºC</Text>
                         </Text>
 
+                        <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
+                            UR: <Text style={{ fontWeight: '900' }}>{Average_UR}</Text>
+                        </Text>
 
-                        <View style={PrevisionStyle.modalCreateAnotationInputsWrapper}>
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Temp Mínima: <Text style={{ fontWeight: '900' }}>{Average_TempMin}ºC</Text>
+                        </Text>
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Temp Máxima: <Text style={{ fontWeight: '900' }}>{Average_TempMax}ºC</Text>
+                        </Text>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"Temp Seco"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaSeco')} />
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Precipitação: <Text style={{ fontWeight: '900' }}>{Average_Preciptacao}mm</Text>
+                        </Text>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"Temp Úmido"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaUmido')} />
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Ceu WeWe: <Text style={{ fontWeight: '900' }}>{Average_CeuWeWe}</Text>
+                        </Text>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"UR Tabela"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'urTabela')} />
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Solo 0900: <Text style={{ fontWeight: '900' }}>{Average_Solo0900}</Text>
+                        </Text>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"Temp Mínima"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaMin')} />
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Pressão: <Text style={{ fontWeight: '900' }}>{Average_Pressao}hPa</Text>
+                        </Text>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"Temp Máxima"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaMax')} />
+                        <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
+                            Veloc Vento Km/h: <Text style={{ fontWeight: '900' }}>{Average_VelocidadeVento}Km/h</Text>
+                        </Text>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"Precipitação"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, 'mm', 'precipitacao')} />
+                    </View>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"Céu WeWe"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'ceuWeWe')} />
+                    <View style={PrevisionStyle.buttonsWrapper}>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"Solo 0900"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'solo0900')} />
+                        <TouchableOpacity style={[PrevisionStyle.buttonPrevision, PrevisionStyle.createAnotationButton]}
+                            onPress={() => setModalCreateAnotation(!modalCreateAnotation)}>
+                            <Text style={PrevisionStyle.buttonPrevisionText}>
+                                Inserir Informações na Previsão
+                            </Text>
+                        </TouchableOpacity>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"Pressão"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, 'hPa', 'pressao')} />
+                        <Text style={PrevisionStyle.buttonsGenerateTitle}>Gerar Excel e Gráficos</Text>
 
-                            <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                placeholder={"Velocidade Km/h"} placeholderTextColor={mainInputsPHTextColor}
-                                inputMode={'numeric'}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, 'Km', 'velocidadeKm')} />
+                        <View style={PrevisionStyle.buttonsGenerate}>
 
-                            <TextInput style={{ ...PrevisionStyle.modalCreateAnotationInput, width: '89%' }}
-                                placeholder={"Direção"} placeholderTextColor={mainInputsPHTextColor}
-                                onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'direcao')} />
-
-                            <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
-                                onPress={() => setShowDatePickerModalCreate(true)}>
-                                <Text style={{ textAlign: 'center' }}>
-                                    {
-                                        createCurrentDateTimePicker.toLocaleDateString(
-                                            'pt-BR',
-                                            {
-                                                year: 'numeric',
-                                                month: '2-digit',
-                                                day: '2-digit',
-                                                timeZone: 'America/Sao_Paulo'
-                                            }
-                                        )
-                                    }
-                                </Text>
+                            <TouchableOpacity style={PrevisionStyle.buttonPrevision}
+                                onPress={() => generateExcel(7)}>
+                                <Text style={PrevisionStyle.buttonPrevisionText}>Semanal</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
-                                onPress={() => { setShowHourPickerModalCreate(true); }}>
-                                <Text style={{ textAlign: 'center' }}>
-                                    {
-                                        createCurrentDateTimePicker.toLocaleTimeString(
-                                            'pt-BR',
-                                            {
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                                timeZone: 'America/Sao_Paulo'
-                                            }
-                                        )
-                                    }
-                                </Text>
+                            <TouchableOpacity style={PrevisionStyle.buttonPrevision}
+                                onPress={() => generateExcel(15)}>
+                                <Text style={PrevisionStyle.buttonPrevisionText}>Quinzenal</Text>
                             </TouchableOpacity>
 
-                            <SafeAreaView>
-                                {
-                                    showDatePickerModalCreate && (
-                                        <DateTimePicker
-                                            value={createCurrentDateTimePicker}
-                                            mode={'date'}
-                                            display={"spinner"}
-                                            is24Hour={true}
-                                            timeZoneName={'America/Sao_Paulo'}
-                                            onChange={(_, newDate) => {
-                                                setShowDatePickerModalCreate(false);
-                                                setCreateCurrentDateTimePicker(newDate);
-                                            }}
-                                        />
-                                    )}
-
-                                {
-                                    showHourPickerModalCreate && (
-                                        <DateTimePicker
-                                            value={createCurrentDateTimePicker}
-                                            mode={'time'}
-                                            display={"clock"}
-                                            is24Hour={true}
-                                            timeZoneName={'America/Sao_Paulo'}
-                                            onChange={(_, newTime) => {
-                                                setShowHourPickerModalCreate(false);
-                                                setCreateCurrentDateTimePicker(newTime);
-                                            }}
-                                        />
-                                    )}
-                            </SafeAreaView>
+                            <TouchableOpacity style={PrevisionStyle.buttonPrevision}
+                                onPress={() => generateExcel(31)}>
+                                <Text style={PrevisionStyle.buttonPrevisionText}>Mensal</Text>
+                            </TouchableOpacity>
 
                         </View>
 
-
-                        <TouchableOpacity style={PrevisionStyle.modalCreateAnotationSubmit} onPress={() => createAnotation()}>
-                            <Text style={{ ...PrevisionStyle.modalCreateAnotationText, fontSize: 17 }}>Criar</Text>
-                        </TouchableOpacity>
                     </View>
-
-                    <View style={{ ...PrevisionStyle.previsionLoadingView, display: previsionLoadingIconDisplay }}>
-                        <ActivityIndicator size="large" animation={true} color={"white"}
-                            style={PrevisionStyle.previsionLoadingIcon} />
-                    </View>
-                </View>
-
-            </Modal>
-
-            <View style={PrevisionStyle.header}>
-                <TouchableOpacity style={PrevisionStyle.backToHomeButton} onPress={() =>
-                    router.push(`/(tabs)/home?user=${JSON.stringify(user)}`)}>
-                    <AntDesign name="left" size={24} color="black" />
-                </TouchableOpacity>
-
-                <Text style={PrevisionStyle.previsionTitle}>
-                    {previsionInfo.previsionTitle}
-                </Text>
-            </View>
-
-            <View style={PrevisionStyle.previsionTableWrapper}>
-
-                <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}
-                    nestedScrollEnabled={true}>
-
-                    <ScrollView
-                        horizontal={true} showsHorizontalScrollIndicator={true} showsVerticalScrollIndicator={true}
-                        nestedScrollEnabled={true}
-                        style={PrevisionStyle.previsionTableScrollView}>
-
-                        <Table borderStyle={{ borderWidth: 1, borderColor: '#d9d9d9' }}>
-
-                            <Row data={HeadTable} style={PrevisionStyle.previsionTableHead} textStyle={PrevisionStyle.previsionTableText} widthArr={previsionTableWidthColumns} />
-
-                            <Rows data={previsionAnotationsInfo} style={PrevisionStyle.previsionTableRow} textStyle={PrevisionStyle.previsionTableText} widthArr={previsionTableWidthColumns} />
-
-                        </Table>
-
-                    </ScrollView>
 
                 </ScrollView>
 
-            </View>
-
-            <View style={PrevisionStyle.previsionMonthlyAverage}>
-
-                <Text style={PrevisionStyle.previsionMonthlyAverageTitle}>Médias Mensais:</Text>
-
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Temp Seco: <Text style={{ fontWeight: '900' }}>{Average_TempSeco}ºC</Text>
-                </Text>
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Temp Úmido: <Text style={{ fontWeight: '900' }}>{Average_TempUmido}ºC</Text>
-                </Text>
-
-                <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
-                    UR: <Text style={{ fontWeight: '900' }}>{Average_UR}</Text>
-                </Text>
-
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Temp Mínima: <Text style={{ fontWeight: '900' }}>{Average_TempMin}ºC</Text>
-                </Text>
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Temp Máxima: <Text style={{ fontWeight: '900' }}>{Average_TempMax}ºC</Text>
-                </Text>
-
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Precipitação: <Text style={{ fontWeight: '900' }}>{Average_Preciptacao}mm</Text>
-                </Text>
-
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Ceu WeWe: <Text style={{ fontWeight: '900' }}>{Average_CeuWeWe}</Text>
-                </Text>
-
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Solo 0900: <Text style={{ fontWeight: '900' }}>{Average_Solo0900}</Text>
-                </Text>
-
-                <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                    Pressão: <Text style={{ fontWeight: '900' }}>{Average_Pressao}hPa</Text>
-                </Text>
-
-                <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
-                    Veloc Vento Km/h: <Text style={{ fontWeight: '900' }}>{Average_VelocidadeVento}Km/h</Text>
-                </Text>
-
-            </View>
-
-            <View style={PrevisionStyle.generateButtonsWrapper}>
-
-                <TouchableOpacity style={[PrevisionStyle.generateButton, PrevisionStyle.createAnotationButton]}
-                    onPress={() => setModalCreateAnotation(!modalCreateAnotation)}>
-                    <Text style={PrevisionStyle.generateButtonText}>
-                        Inserir Informações na Previsão
-                    </Text>
-                </TouchableOpacity>
-
-                <Text style={PrevisionStyle.generateButtonsTitle}>Gerar Excel e Gráficos</Text>
-
-                <View style={PrevisionStyle.generateButtonsView}>
-
-                    <TouchableOpacity style={PrevisionStyle.generateButton}
-                        onPress={() => generateExcel(7)}>
-                        <Text style={PrevisionStyle.generateButtonText}>Semanal</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={PrevisionStyle.generateButton}
-                        onPress={() => generateExcel(15)}>
-                        <Text style={PrevisionStyle.generateButtonText}>Quinzenal</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={PrevisionStyle.generateButton}
-                        onPress={() => generateExcel(31)}>
-                        <Text style={PrevisionStyle.generateButtonText}>Mensal</Text>
-                    </TouchableOpacity>
-
-                </View>
-
-            </View>
-
-        </ScrollView>
+            </SafeAreaView>
+        </SafeAreaProvider>
 
     );
 

@@ -6,7 +6,7 @@ const LoginStyle = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: '#e3e3e3',
+        backgroundColor: '#DCE8FF',
     },
 
     loginIcon:{

@@ -8,7 +8,7 @@ const StudentsStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         flex: 1,
-        backgroundColor: '#DCE8FF', //#e3e3e3
+        backgroundColor: '#DCE8FF',
     },
 
     header: {

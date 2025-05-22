@@ -9,6 +9,7 @@ import {
     Modal,
     Image,
     ScrollView,
+    ToastAndroid
 } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from "expo-router";
@@ -24,9 +25,13 @@ import { Database } from '../../../services/firebase.initialize.js';
 import { collection, getDocs, addDoc, Timestamp, query, orderBy, onSnapshot } from 'firebase/firestore'
 
 import { Collapse, CollapseHeader, CollapseBody } from 'accordion-collapse-react-native';
+import LoadingComponent from "../../../components/LoadingComponent";
 
 // Home Function
 export default function Home() {
+
+    // Is Loading 
+    const [isLoadingInfo, setIsLoadingInfo] = useState(true);
 
     // User
     const user = JSON.parse(useLocalSearchParams().user);
@@ -53,6 +58,8 @@ export default function Home() {
     // Get All Previsions
     async function getAllPrevisions() {
 
+        setIsLoadingInfo(true);
+
         const finalDataPrevisions = [];
 
         const getPrevisionsQuery = query(PrevisionsDatabaseRef, orderBy("createdAt", "asc"));
@@ -74,6 +81,7 @@ export default function Home() {
         })
 
         setNewPrevision(finalDataPrevisions);
+        setIsLoadingInfo(false);
 
     }
 
@@ -105,7 +113,8 @@ export default function Home() {
             createdBy: userName,
         });
 
-        setModalCreatePrevision(!modalCreatePrevision);
+        setModalCreatePrevision(false);
+        ToastAndroid.show("Previsão criada com sucesso.", ToastAndroid.SHORT);
 
     }
 
@@ -122,6 +131,10 @@ export default function Home() {
         realTimeUpdatePrevisions();
 
     }, []);
+
+    // Is Loading
+    if(isLoadingInfo) 
+        return <LoadingComponent />
 
     // Return
     return (

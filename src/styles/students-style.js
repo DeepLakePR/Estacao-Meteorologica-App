@@ -114,6 +114,53 @@ const StudentsStyle = StyleSheet.create({
         justifyContent: 'center',
     },
 
+    modalStudentsManagementExitButton: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        padding: 8,
+    },
+
+    modalStudentsManagementTitle: {
+        fontSize: 16,
+        marginBottom: 12,
+    },
+
+    modalStudentsManagementInput: {
+        marginBottom: 10,
+        width: '90%',
+        paddingTop: 6,
+        paddingBottom: 6,
+        // paddingLeft: 8,
+        // paddingRight: 8, 
+        textAlign: 'center',
+        color: 'white',
+        backgroundColor: '#8daae0',
+        borderRadius: 6,
+        fontSize: 15
+    },
+
+    modalStudentsManagementSaveButton: {
+        backgroundColor: '#668cd1',
+        padding: 6,
+        marginTop: 12,
+        borderRadius: 8,
+        width: '30%',
+    },
+
+    // Student Modal -> More Options
+    modalStudentsManagementEditOptions: {
+        position: 'absolute',
+        bottom: 8,
+        right: 0,
+        padding: 10,
+        flexDirection: 'row',
+    },
+
+    modalStudentsManagementEditOptionsButton: {
+        padding: 8,
+    }
+
 });
 
 export default StudentsStyle;

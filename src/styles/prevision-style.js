@@ -62,7 +62,6 @@ const PrevisionStyle = StyleSheet.create({
         width: '95%', 
         height: 'auto', 
         backgroundColor: '#525252', 
-        borderRadius: 5,
     },
 
     previsionTableHead: {
@@ -80,8 +79,8 @@ const PrevisionStyle = StyleSheet.create({
     // Prevision Monthly Average
     previsionMonthlyAverage:{
         padding: 20,
-        paddingLeft: 25,
-        paddingRight: 25,
+        paddingLeft: 15,
+        paddingRight: 15,
         marginTop: 20,
         marginBottom: 10,
         flexDirection: 'row',
@@ -104,6 +103,10 @@ const PrevisionStyle = StyleSheet.create({
         paddingBottom: 3,
         borderBottomColor: 'black',
         borderBottomWidth: 1
+    },
+
+    previsionMonthlyAverageTextBold: {
+        fontWeight: '900'
     },
 
     ////////////////////////
@@ -151,15 +154,15 @@ const PrevisionStyle = StyleSheet.create({
     },
 
     ////////////////////////
-    // Modal Create Anotation
-    modalCreateAnotationContainer:{
+    // Modal Anotation
+    modalAnotationContainer:{
         backgroundColor: 'rgba(0,0,0,0.3)',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
 
-    modalCreateAnotationView:{
+    modalAnotationView:{
         width: '95%',
         padding: 4,
         paddingTop: 30,
@@ -171,25 +174,25 @@ const PrevisionStyle = StyleSheet.create({
         justifyContent: 'center',
     },
 
-    modalCreateAnotationCloseButton:{
+    modalAnotationCloseButton:{
         position: 'absolute',
         top: 0,
         right: 5,
         padding: 10
     },
 
-    modalCreateAnotationTitle:{
+    modalAnotationTitle:{
         fontSize: 21,
         textAlign: 'center',
     },
 
-    modalCreateAnotationText:{
+    modalAnotationText:{
         fontSize: 19,
         textAlign: 'center',
     },
 
     // Modal Inputs Wrapper 
-    modalCreateAnotationInputsWrapper:{
+    modalAnotationInputsWrapper:{
         marginTop: 20,
         marginBottom: 40,
         alignItems: 'center',
@@ -199,7 +202,7 @@ const PrevisionStyle = StyleSheet.create({
         flexDirection: 'row'
     },
 
-    modalCreateAnotationInput:{
+    modalAnotationInput:{
         width: '42.5%',
         height: 36,
         backgroundColor: '#e8e8e8',
@@ -214,12 +217,12 @@ const PrevisionStyle = StyleSheet.create({
         borderRadius: 4,
     },
 
-    // Modal Create Anotation Submit Button
-    modalCreateAnotationSubmit:{
+    // Modal Anotation Submit Button
+    modalAnotationSubmit:{
         width: '60%',
         padding: 8,
         textAlign: 'center',
-        backgroundColor: '#DCE8FF',
+        backgroundColor: '#38BDF8',
         borderRadius: 4,
     },
 

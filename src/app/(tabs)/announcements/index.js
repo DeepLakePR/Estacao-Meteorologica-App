@@ -257,7 +257,7 @@ export default function Announcements() {
                 </View>
 
                 {/* Divider */}
-                <View style={{ height: 2, width: '95%', backgroundColor: '#757575', borderRadius: '50%' }}></View>
+                <View style={{ height: 2, width: '95%', backgroundColor: '#757575', borderRadius: '50%', marginBottom: 15 }}></View>
 
                 {/* List Announcements */}
                 <ScrollView style={AnnouncementsStyle.announcementsListWrapper} contentContainerStyle={{ alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 70 }}>

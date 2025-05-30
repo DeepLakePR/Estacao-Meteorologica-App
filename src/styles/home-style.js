@@ -192,7 +192,7 @@ const HomeStyle = StyleSheet.create({
         width: '60%',
         padding: 8,
         textAlign: 'center',
-        backgroundColor: '#DCE8FF',
+        backgroundColor: '#38BDF8',
         borderRadius: 4,
     },
 

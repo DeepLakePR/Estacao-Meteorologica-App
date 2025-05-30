@@ -168,7 +168,7 @@ export default function Home() {
                             <TextInput style={HomeStyle.modalCreatePrevisionInput} onChangeText={(newText) => setNewPrevisionTitle(newText)} placeholder={"Nome da Previsão"} placeholderTextColor={'#a8a8a8'} />
 
                             <TouchableOpacity style={HomeStyle.modalCreatePrevisionSubmit} onPress={() => createPrevision()}>
-                                <Text style={{ ...HomeStyle.modalCreatePrevisionText, fontSize: 17 }}>Criar</Text>
+                                <Text style={{ ...HomeStyle.modalCreatePrevisionText, fontSize: 17, color: "white" }}>Criar</Text>
                             </TouchableOpacity>
 
                         </View>

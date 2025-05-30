@@ -6,7 +6,6 @@ import {
     TextInput,
     TouchableOpacity,
     Keyboard,
-    FlatList,
     Modal,
     ScrollView,
     ActivityIndicator,
@@ -33,10 +32,31 @@ import { writeAsStringAsync, StorageAccessFramework, EncodingType } from "expo-f
 
 // Firestore
 import { Database } from '../../services/firebase.initialize.js';
-import { collection, getDoc, getDocs, doc, addDoc, query, orderBy, onSnapshot, where } from 'firebase/firestore'
+import { collection, getDoc, getDocs, doc, addDoc, updateDoc, query, orderBy, onSnapshot, where } from 'firebase/firestore'
 
 // Variables
-const mainInputsPHTextColor = "#a8a8a8"; // Create Anotation Inputs Place Holder Text Color
+const DATE_FORMAT_CONFIG = { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' };
+const ANOTATION_FORMAT = {
+    "anotationCreatedAt": new Date(),
+
+    "temperaturaSeco": { placeholder: "Temp Seco", acronym: " ºC" },
+    "temperaturaUmido": { placeholder: "Temp Úmido", acronym: " ºC" },
+
+    "urTabela": { placeholder: "UR Tabela", acronym: null },
+
+    "temperaturaMin": { placeholder: "Temp Mínima", acronym: " ºC" },
+    "temperaturaMax": { placeholder: "Temp Máxima", acronym: " ºC" },
+
+    "precipitacao": { placeholder: "Precipitação", acronym: "mm" },
+    "ceuWeWe": { placeholder: "Céu WeWe", acronym: null },
+    "solo0900": { placeholder: "Solo 0900", acronym: null },
+    "pressao": { placeholder: "Pressão", acronym: "hPa" },
+
+    "velocidadeKm": { placeholder: "Velocidade Km/h", acronym: "Km/h" },
+    "direcao": { placeholder: "Direção", acronym: null },
+
+    "anotationCreatedBy": null
+};
 
 // Prevision Function
 export default function Prevision() {
@@ -91,14 +111,16 @@ export default function Prevision() {
 
     const [previsionLoadingIconDisplay, setPrevisionLoadingIconDisplay] = useState('none');
 
-    const [newPrevisionAnotation, setNewPrevisionAnotation] = useState({});
-    const [modalCreateAnotation, setModalCreateAnotation] = useState(false);
+    const [singlePrevisionAnotation, setSinglePrevisionAnotation] = useState(ANOTATION_FORMAT);
+    const [modalAnotation, setModalAnotation] = useState(false);
 
     // Modal Date & Hour Picker
-    const [createCurrentDateTimePicker, setCreateCurrentDateTimePicker] = useState(new Date());
+    const [currentDateTimePicker, setCurrentDateTimePicker] = useState(new Date());
 
-    const [showDatePickerModalCreate, setShowDatePickerModalCreate] = useState(false);
-    const [showHourPickerModalCreate, setShowHourPickerModalCreate] = useState(false);
+    const [viewDatePickerModal, setViewDatePickerModal] = useState(false);
+    const [viewHourPickerModal, setViewHourPickerModal] = useState(false);
+
+    const [isEditAnotation, setIsEditAnotation] = useState(false);
 
     // Prevision
     const PrevisionsDatabaseRef = collection(Database, "previsions");
@@ -106,24 +128,26 @@ export default function Prevision() {
     const PrevisionAnotationsRef = collection(PrevisionDocRef, "previsionAnotations");
 
     // Monthly Average Prevision
-    const [Average_TempSeco, setAverage_TempSeco] = useState("N/A");
-    const [Average_TempUmido, setAverage_TempUmido] = useState("N/A");
+    const [MonthlyAverageData, setMonthlyAverageData] = useState({
+        "temperaturaSeco": "N/A",
+        "temperaturaUmido": "N/A",
 
-    const [Average_UR, setAverage_UR] = useState("N/A");
+        "urTabela": "N/A",
 
-    const [Average_TempMin, setAverage_TempMin] = useState("N/A");
-    const [Average_TempMax, setAverage_TempMax] = useState("N/A");
+        "temperaturaMin": "N/A",
+        "temperaturaMax": "N/A",
 
-    const [Average_Preciptacao, setAverage_Preciptacao] = useState("N/A");
-    const [Average_CeuWeWe, setAverage_CeuWeWe] = useState("N/A");
-    const [Average_Solo0900, setAverage_Solo0900] = useState("N/A");
-    const [Average_Pressao, setAverage_Pressao] = useState("N/A");
+        "precipitacao": "N/A",
+        "ceuWeWe": "N/A",
+        "solo0900": "N/A",
+        "pressao": "N/A",
 
-    const [Average_VelocidadeVento, setAverage_VelocidadeVento] = useState("N/A");
+        "velocidadeKm": "N/A",
+    });
 
     //////////////////////////////////
     // Generate Excel
-    const generateExcel = async (daysDuration) => {
+    async function generateExcel(daysDuration) {
 
         // Keyboard Dismiss
         Keyboard.dismiss();
@@ -238,89 +262,106 @@ export default function Prevision() {
 
         await getDocs(getPrevisionAnotationsQuery).then((querySnapshot) => {
 
+            // Variables
             let anotationsLength = querySnapshot.docs.length;
 
-            let sum_TemperaturaSeco = 0;
-            let sum_TemperaturaUmido = 0;
+            let sumAverage = {
+                "temperaturaSeco": 0,
+                "temperaturaUmido": 0,
 
-            let sum_UrTabela = 0;
+                "urTabela": 0,
 
-            let sum_TemperaturaMin = 0;
-            let sum_TemperaturaMax = 0;
+                "temperaturaMin": 0,
+                "temperaturaMax": 0,
 
-            let sum_Precipitacao = 0;
-            let sum_CeuWeWe = 0;
-            let sum_Solo0900 = 0;
-            let sum_Pressao = 0;
+                "precipitacao": 0,
+                "ceuWeWe": 0,
+                "solo0900": 0,
+                "pressao": 0,
 
-            let sum_VelocidadeVento = 0;
+                "velocidadeKm": 0,
+            }
 
+            // Push Data Inside Array and Set Average
             querySnapshot.docs.forEach((anotationDoc) => {
+
+                const {
+                    anotationCreatedAt,
+                    temperaturaSeco,
+                    temperaturaUmido,
+                    urTabela,
+                    temperaturaMin,
+                    temperaturaMax,
+                    precipitacao,
+                    ceuWeWe,
+                    solo0900,
+                    pressao,
+                    velocidadeKm,
+                    direcao,
+                    anotationCreatedBy,
+                } = anotationDoc.data();
+
+                const anotation = {...anotationDoc.data(), "id": anotationDoc.id}
 
                 // Push to Array
                 finalDataPrevisionAnotations.push([
 
-                    anotationDoc.data().anotationCreatedAt.toDate().toLocaleString(
-                        'pt-BR',
-                        {
-                            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo'
-                        }
+                    anotationCreatedAt.toDate().toLocaleString(
+                        'pt-BR', DATE_FORMAT_CONFIG
                     ),
 
-                    anotationDoc.data().temperaturaSeco,
-                    anotationDoc.data().temperaturaUmido,
+                    temperaturaSeco,
+                    temperaturaUmido,
 
-                    anotationDoc.data().urTabela,
+                    urTabela,
 
-                    anotationDoc.data().temperaturaMin,
-                    anotationDoc.data().temperaturaMax,
+                    temperaturaMin,
+                    temperaturaMax,
 
-                    anotationDoc.data().precipitacao,
-                    anotationDoc.data().ceuWeWe,
-                    anotationDoc.data().solo0900,
-                    anotationDoc.data().pressao,
+                    precipitacao,
+                    ceuWeWe,
+                    solo0900,
+                    pressao,
 
-                    anotationDoc.data().velocidadeKm,
-                    anotationDoc.data().direcao,
-                    anotationDoc.data().anotationCreatedBy,
-                    <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => console.log(anotationDoc.id)}>
+                    velocidadeKm,
+                    direcao,
+                    anotationCreatedBy,
+
+                    <TouchableOpacity style={{ alignItems: 'center' }} onPress={
+                        () => openAnotationModal(
+                            'edit', 
+                            anotation
+                        )
+                    }>
                         <AntDesign name="edit" size={22} color="white" />
                     </TouchableOpacity>
 
                 ]);
 
-                // Calculate Average
-                sum_TemperaturaSeco += cleanAndConvertToNumber(anotationDoc.data().temperaturaSeco);
-                sum_TemperaturaUmido += cleanAndConvertToNumber(anotationDoc.data().temperaturaUmido);
+                // Set Average Variable
+                Object.keys(sumAverage).forEach((value) => {
+                    sumAverage[value] += cleanAndConvertToNumber(anotationDoc.data()[value]);
 
-                sum_UrTabela += cleanAndConvertToNumber(anotationDoc.data().urTabela);
-
-                sum_TemperaturaMin += cleanAndConvertToNumber(anotationDoc.data().temperaturaMin);
-                sum_TemperaturaMax += cleanAndConvertToNumber(anotationDoc.data().temperaturaMax);
-
-                sum_Precipitacao += cleanAndConvertToNumber(anotationDoc.data().precipitacao);
-                sum_CeuWeWe += cleanAndConvertToNumber(anotationDoc.data().ceuWeWe);
-                sum_Solo0900 += cleanAndConvertToNumber(anotationDoc.data().solo0900);
-                sum_Pressao += cleanAndConvertToNumber(anotationDoc.data().pressao);
-
-                sum_VelocidadeVento += cleanAndConvertToNumber(anotationDoc.data().velocidadeKm);
+                });
 
             });
 
-            setAverage_TempSeco(Math.round(isNaN(sum_TemperaturaSeco / anotationsLength) ? 0 : sum_TemperaturaSeco / anotationsLength));
-            setAverage_TempUmido(Math.round(isNaN(sum_TemperaturaUmido / anotationsLength) ? 0 : sum_TemperaturaUmido / anotationsLength));
+            // Calc Average
+            Object.entries(sumAverage).map((keyValue) => {
 
-            setAverage_UR(Math.round(isNaN(sum_UrTabela / anotationsLength) ? 0 : sum_UrTabela / anotationsLength));
+                let sumResult = Math.round(
+                    isNaN(keyValue[1] / anotationsLength)
+                        ? 0
+                        : keyValue[1] / anotationsLength
+                );
 
-            setAverage_TempMin(Math.round(isNaN(sum_TemperaturaMin / anotationsLength) ? 0 : sum_TemperaturaMin / anotationsLength));
-            setAverage_TempMax(Math.round(isNaN(sum_TemperaturaMax / anotationsLength) ? 0 : sum_TemperaturaMax / anotationsLength));
+                setMonthlyAverageData(old => ({
+                    ...old,
+                    [keyValue[0]]: sumResult
+                })
+                );
 
-            setAverage_Preciptacao(Math.round(isNaN(sum_Precipitacao / anotationsLength) ? 0 : sum_Precipitacao / anotationsLength));
-            setAverage_CeuWeWe(Math.round(isNaN(sum_CeuWeWe / anotationsLength) ? 0 : sum_CeuWeWe / anotationsLength));
-            setAverage_Solo0900(Math.round(isNaN(sum_Solo0900 / anotationsLength) ? 0 : sum_Solo0900 / anotationsLength));
-            setAverage_Pressao(Math.round(isNaN(sum_Pressao / anotationsLength) ? 0 : sum_Pressao / anotationsLength));
-
-            setAverage_VelocidadeVento(Math.round(isNaN(sum_VelocidadeVento / anotationsLength) ? 0 : sum_VelocidadeVento / anotationsLength));
+            });
 
         });
 
@@ -347,8 +388,8 @@ export default function Prevision() {
 
     }
 
-    // Create New Prevision Anotation
-    async function createAnotation() {
+    // Handle Prevision Anotation
+    async function handleAnotation() {
 
         Keyboard.dismiss();
 
@@ -356,20 +397,40 @@ export default function Prevision() {
 
         setTimeout(async () => {
 
-            if (Object.keys(newPrevisionAnotation).length < 11) {
+            let haveEmptyValues = Object.keys(singlePrevisionAnotation).some(
+                key => {
+                    if (key !== "anotationCreatedAt" && key !== "anotationCreatedBy") 
+                        return typeof(singlePrevisionAnotation[key]) === 'object' ? true 
+                        : typeof(singlePrevisionAnotation[key]) === "string" && singlePrevisionAnotation[key].trim().length === 0 
+                        ? true : false
+                    
+                })
+
+            if (haveEmptyValues) {
                 setPrevisionLoadingIconDisplay('none');
                 return alert('É necessário preencher todos os campos para inserir as informações.');
 
             }
 
-            await addDoc(PrevisionAnotationsRef, {
-                ...newPrevisionAnotation,
-                'anotationCreatedAt': createCurrentDateTimePicker,
+            const anotation = {
+                ...singlePrevisionAnotation,
+                'anotationCreatedAt': currentDateTimePicker,
                 'anotationCreatedBy': user.userName
-            });
+            }
 
-            setModalCreateAnotation(!modalCreateAnotation);
-            setNewPrevisionAnotation({});
+            if(!isEditAnotation){
+                await addDoc(PrevisionAnotationsRef, anotation);
+
+            }else{
+                await updateDoc(doc(PrevisionAnotationsRef, singlePrevisionAnotation.id), 
+                    (({id, ...anotation}) => anotation )(anotation)
+                );
+
+            }
+
+            setModalAnotation(false);
+            setIsEditAnotation(false);
+            setSinglePrevisionAnotation(ANOTATION_FORMAT);
             setPrevisionLoadingIconDisplay('none');
 
         }, 1000);
@@ -377,29 +438,58 @@ export default function Prevision() {
     }
 
     // Set New Prevision Anotation
-    function setNewPrevisionAnotationInput(newValue, finalCombination, property) {
+    function setSinglePrevisionAnotationInput(newValue, finalCombination, property) {
 
-        if (!newValue || !property)
+        if(newValue.length === 0){
+            setSinglePrevisionAnotation({
+                ...singlePrevisionAnotation,
+                [property]: newValue
+            });
+            return false;
+
+        }
+
+        if ((!newValue || !property) && !isEditAnotation)
             return false;
 
         if (finalCombination)
             newValue = newValue + finalCombination
 
-        setNewPrevisionAnotation({
-            ...newPrevisionAnotation,
+        setSinglePrevisionAnotation({
+            ...singlePrevisionAnotation,
             [property]: newValue
         });
     }
 
+    // Open Anotation Modal
+    function openAnotationModal(type, anotationToEdit) {
+
+        if(type === "new") {
+            setSinglePrevisionAnotation(ANOTATION_FORMAT);
+            setCurrentDateTimePicker(new Date());
+            setIsEditAnotation(false);
+            
+
+        }else { // Edit
+            setSinglePrevisionAnotation(anotationToEdit);
+            setCurrentDateTimePicker(anotationToEdit.anotationCreatedAt.toDate());
+            setIsEditAnotation(true);
+
+        }
+
+        setModalAnotation(true);
+
+    }
+
     // Clean and Convert Single Information
-    function cleanAndConvertToNumber(value) {
+    function cleanAndConvertToNumber(value, returnString) {
 
         let cleanedValue = 0;
 
         if (value)
             cleanedValue = value.replace(/[^\d.-]/g, '');
 
-        return parseFloat(cleanedValue);
+        return !returnString ? parseFloat(cleanedValue) : cleanedValue;
 
     }
 
@@ -425,84 +515,63 @@ export default function Prevision() {
                         statusBarTranslucent={true}
                         animationType="fade"
                         transparent={true}
-                        visible={modalCreateAnotation}
+                        visible={modalAnotation}
                         onRequestClose={() => {
-                            setModalCreateAnotation(!modalCreateAnotation);
+                            setModalAnotation(false);
                         }}>
 
-                        <View style={PrevisionStyle.modalCreateAnotationContainer}>
-                            <View style={PrevisionStyle.modalCreateAnotationView}>
+                        <View style={PrevisionStyle.modalAnotationContainer}>
+                            <View style={PrevisionStyle.modalAnotationView}>
 
-                                <TouchableOpacity style={PrevisionStyle.modalCreateAnotationCloseButton} onPress={() => setModalCreateAnotation(!modalCreateAnotation)}>
-                                    <Text style={PrevisionStyle.modalCreateAnotationText}>X</Text>
+                                <TouchableOpacity style={PrevisionStyle.modalAnotationCloseButton} onPress={() => setModalAnotation(false)}>
+                                    <Text style={PrevisionStyle.modalAnotationText}>X</Text>
                                 </TouchableOpacity>
 
-                                <Text style={PrevisionStyle.modalCreateAnotationTitle}>
-                                    Insira as informações da Estação Meteorológica
+                                <Text style={PrevisionStyle.modalAnotationTitle}>
+                                    {!isEditAnotation
+                                        ? "Insira as informações da Estação Meteorológica"
+                                        : "Editar Anotação"
+                                    }
                                 </Text>
 
+                                <View style={PrevisionStyle.modalAnotationInputsWrapper}>
 
-                                <View style={PrevisionStyle.modalCreateAnotationInputsWrapper}>
+                                    {
+                                        Object.keys(ANOTATION_FORMAT).map((anotationKey) => {
 
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"Temp Seco"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaSeco')} />
+                                            if (anotationKey === "anotationCreatedAt" || anotationKey === 'anotationCreatedBy')
+                                                return false;
 
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"Temp Úmido"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaUmido')} />
+                                            return <TextInput style={
+                                                anotationKey !== "urTabela"
+                                                    ? PrevisionStyle.modalAnotationInput
+                                                    : { ...PrevisionStyle.modalAnotationInput, width: "89%" }
+                                            }
+                                                key={anotationKey}
+                                                placeholder={ANOTATION_FORMAT[anotationKey].placeholder} placeholderTextColor={"#a8a8a8"}
+                                                inputMode={anotationKey !== "direcao" ? "numeric" : "text"}
+                                                value={
+                                                    isEditAnotation 
+                                                    ? anotationKey === "direcao" 
+                                                        ? singlePrevisionAnotation[anotationKey] 
+                                                        : cleanAndConvertToNumber(singlePrevisionAnotation[anotationKey], true) 
+                                                    : typeof(singlePrevisionAnotation[anotationKey]) === "string" 
+                                                        ? anotationKey === "direcao"
+                                                            ? singlePrevisionAnotation[anotationKey] 
+                                                            : cleanAndConvertToNumber(singlePrevisionAnotation[anotationKey], true)
+                                                        : ""
+                                                }
+                                                onChangeText={(text) => setSinglePrevisionAnotationInput(text, ANOTATION_FORMAT[anotationKey].acronym, anotationKey)}
+                                            />
 
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"UR Tabela"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'urTabela')} />
+                                        })
+                                    }
 
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"Temp Mínima"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaMin')} />
-
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"Temp Máxima"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, ' ºC', 'temperaturaMax')} />
-
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"Precipitação"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, 'mm', 'precipitacao')} />
-
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"Céu WeWe"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'ceuWeWe')} />
-
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"Solo 0900"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'solo0900')} />
-
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"Pressão"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, 'hPa', 'pressao')} />
-
-                                    <TextInput style={PrevisionStyle.modalCreateAnotationInput}
-                                        placeholder={"Velocidade Km/h"} placeholderTextColor={mainInputsPHTextColor}
-                                        inputMode={'numeric'}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, 'Km', 'velocidadeKm')} />
-
-                                    <TextInput style={{ ...PrevisionStyle.modalCreateAnotationInput, width: '89%' }}
-                                        placeholder={"Direção"} placeholderTextColor={mainInputsPHTextColor}
-                                        onChangeText={(text) => setNewPrevisionAnotationInput(text, null, 'direcao')} />
-
-                                    <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
-                                        onPress={() => setShowDatePickerModalCreate(true)}>
+                                    <TouchableOpacity style={PrevisionStyle.modalAnotationInput}
+                                        onPress={() => setViewDatePickerModal(true)}>
                                         <Text style={{ textAlign: 'center' }}>
                                             {
-                                                createCurrentDateTimePicker.toLocaleDateString(
+                                                currentDateTimePicker.toLocaleDateString(
                                                     'pt-BR',
                                                     {
                                                         year: 'numeric',
@@ -515,11 +584,11 @@ export default function Prevision() {
                                         </Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity style={PrevisionStyle.modalCreateAnotationInput}
-                                        onPress={() => { setShowHourPickerModalCreate(true); }}>
+                                    <TouchableOpacity style={PrevisionStyle.modalAnotationInput}
+                                        onPress={() => { setViewHourPickerModal(true); }}>
                                         <Text style={{ textAlign: 'center' }}>
                                             {
-                                                createCurrentDateTimePicker.toLocaleTimeString(
+                                                currentDateTimePicker.toLocaleTimeString(
                                                     'pt-BR',
                                                     {
                                                         hour: '2-digit',
@@ -533,31 +602,31 @@ export default function Prevision() {
 
                                     <SafeAreaView>
                                         {
-                                            showDatePickerModalCreate && (
+                                            viewDatePickerModal && (
                                                 <DateTimePicker
-                                                    value={createCurrentDateTimePicker}
+                                                    value={currentDateTimePicker}
                                                     mode={'date'}
                                                     display={"spinner"}
                                                     is24Hour={true}
                                                     timeZoneName={'America/Sao_Paulo'}
                                                     onChange={(_, newDate) => {
-                                                        setShowDatePickerModalCreate(false);
-                                                        setCreateCurrentDateTimePicker(newDate);
+                                                        setViewDatePickerModal(false);
+                                                        setCurrentDateTimePicker(newDate);
                                                     }}
                                                 />
                                             )}
 
                                         {
-                                            showHourPickerModalCreate && (
+                                            viewHourPickerModal && (
                                                 <DateTimePicker
-                                                    value={createCurrentDateTimePicker}
+                                                    value={currentDateTimePicker}
                                                     mode={'time'}
                                                     display={"clock"}
                                                     is24Hour={true}
                                                     timeZoneName={'America/Sao_Paulo'}
                                                     onChange={(_, newTime) => {
-                                                        setShowHourPickerModalCreate(false);
-                                                        setCreateCurrentDateTimePicker(newTime);
+                                                        setViewHourPickerModal(false);
+                                                        setCurrentDateTimePicker(newTime);
                                                     }}
                                                 />
                                             )}
@@ -566,8 +635,10 @@ export default function Prevision() {
                                 </View>
 
 
-                                <TouchableOpacity style={PrevisionStyle.modalCreateAnotationSubmit} onPress={() => createAnotation()}>
-                                    <Text style={{ ...PrevisionStyle.modalCreateAnotationText, fontSize: 17 }}>Criar</Text>
+                                <TouchableOpacity style={PrevisionStyle.modalAnotationSubmit} onPress={() => handleAnotation()}>
+                                    <Text style={{ ...PrevisionStyle.modalAnotationText, fontSize: 17, color: "white" }}>
+                                        {!isEditAnotation ? "Criar" : "Salvar"}
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -619,41 +690,61 @@ export default function Prevision() {
                         <Text style={PrevisionStyle.previsionMonthlyAverageTitle}>Médias Mensais:</Text>
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                            Temp Seco: <Text style={{ fontWeight: '900' }}>{Average_TempSeco}ºC</Text>
+                            Temp Seco: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.temperaturaSeco}ºC
+                            </Text>
                         </Text>
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                            Temp Úmido: <Text style={{ fontWeight: '900' }}>{Average_TempUmido}ºC</Text>
+                            Temp Úmido: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.temperaturaUmido}ºC
+                            </Text>
                         </Text>
 
                         <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
-                            UR: <Text style={{ fontWeight: '900' }}>{Average_UR}</Text>
+                            UR: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.urTabela}
+                            </Text>
                         </Text>
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                            Temp Mínima: <Text style={{ fontWeight: '900' }}>{Average_TempMin}ºC</Text>
+                            Temp Mínima: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.temperaturaMin}ºC
+                            </Text>
                         </Text>
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                            Temp Máxima: <Text style={{ fontWeight: '900' }}>{Average_TempMax}ºC</Text>
-                        </Text>
-
-                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                            Precipitação: <Text style={{ fontWeight: '900' }}>{Average_Preciptacao}mm</Text>
-                        </Text>
-
-                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                            Ceu WeWe: <Text style={{ fontWeight: '900' }}>{Average_CeuWeWe}</Text>
+                            Temp Máxima: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.temperaturaMax}ºC
+                            </Text>
                         </Text>
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                            Solo 0900: <Text style={{ fontWeight: '900' }}>{Average_Solo0900}</Text>
+                            Precipitação: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.precipitacao}mm
+                            </Text>
                         </Text>
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
-                            Pressão: <Text style={{ fontWeight: '900' }}>{Average_Pressao}hPa</Text>
+                            Ceu WeWe: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.ceuWeWe}
+                            </Text>
+                        </Text>
+
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Solo 0900: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.solo0900}
+                            </Text>
+                        </Text>
+
+                        <Text style={PrevisionStyle.previsionMonthlyAverageText}>
+                            Pressão: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.pressao}hPa
+                            </Text>
                         </Text>
 
                         <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
-                            Veloc Vento Km/h: <Text style={{ fontWeight: '900' }}>{Average_VelocidadeVento}Km/h</Text>
+                            Veloc Vento Km/h: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
+                                {MonthlyAverageData.velocidadeKm}Km/h
+                            </Text>
                         </Text>
 
                     </View>
@@ -661,7 +752,9 @@ export default function Prevision() {
                     <View style={PrevisionStyle.buttonsWrapper}>
 
                         <TouchableOpacity style={[PrevisionStyle.buttonPrevision, PrevisionStyle.createAnotationButton]}
-                            onPress={() => setModalCreateAnotation(!modalCreateAnotation)}>
+                            onPress={() => {
+                                openAnotationModal('new');
+                            }}>
                             <Text style={PrevisionStyle.buttonPrevisionText}>
                                 Inserir Informações na Previsão
                             </Text>

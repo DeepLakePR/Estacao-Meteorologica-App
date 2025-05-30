@@ -82,7 +82,6 @@ const AnnouncementsStyle = StyleSheet.create({
     ////////////////////////
     // List Wrapper
     announcementsListWrapper: {
-        paddingTop: 15,
         width: '100%',
         height: '100%',
     },

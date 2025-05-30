@@ -26,6 +26,8 @@ const LoginStyle = StyleSheet.create({
     loginInput:{
         width: 250,
         height: 36,
+        paddingTop: 6,
+        paddingBottom: 6,
         borderRadius: 5,
         backgroundColor: 'white',
         textAlign: 'center',

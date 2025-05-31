@@ -3,7 +3,7 @@
     "newArchEnabled": true,
     "name": "Estação Meteorológica",
     "slug": "Estacao-Meteorologica",
-    "version": "1.0.7",
+    "version": "1.7.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,7 +18,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "-"
+      "bundleIdentifier": "-",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -49,19 +52,14 @@
       }
     },
     "runtimeVersion": {
-      "policy": "nativeVersion"
+      "policy": "appVersion"
     },
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/886b2ed2-099d-4916-9cc5-159170698f90",
-      "requestHeaders": {
-        "expo-runtime-version": "1.0.7",
-        "expo-channel-name": "production"
-      }
+      "fallbackToCacheTimeout": 60000,
+      "url": "https://u.expo.dev/886b2ed2-099d-4916-9cc5-159170698f90"
     },
-    
     "owner": "guilherme_fm"
   }
 }

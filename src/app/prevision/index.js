@@ -760,7 +760,7 @@ export default function Prevision() {
                             </Text>
                         </TouchableOpacity>
 
-                        <Text style={PrevisionStyle.buttonsGenerateTitle}>Gerar Excel e Gráficos</Text>
+                        <Text style={PrevisionStyle.buttonsGenerateTitle}>Gerar Excel</Text>
 
                         <View style={PrevisionStyle.buttonsGenerate}>
 

@@ -49,14 +49,19 @@
       }
     },
     "runtimeVersion": {
-      "policy": "appVersion"
+      "policy": "nativeVersion"
     },
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/886b2ed2-099d-4916-9cc5-159170698f90"
+      "url": "https://u.expo.dev/886b2ed2-099d-4916-9cc5-159170698f90",
+      "requestHeaders": {
+        "expo-runtime-version": "1.0.7",
+        "expo-channel-name": "production"
+      }
     },
+    
     "owner": "guilherme_fm"
   }
 }

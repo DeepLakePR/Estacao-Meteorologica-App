@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { LogBox } from 'react-native';
-import { router, Tabs } from 'expo-router';
+import { router } from 'expo-router';
 import { Stack } from 'expo-router/stack';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+
+import * as Updates from 'expo-updates';
 
 import * as SecureStore from 'expo-secure-store';
 
@@ -100,8 +101,32 @@ export default function RootApp() {
     }, 250)
   }
 
+  async function checkForUpdates() {
+
+    if(!Updates.isEmbeddedLaunch){
+      return;
+      
+    }
+
+    try{
+
+      const update = await Updates.checkForUpdateAsync();
+
+      if(update.isAvailable){
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+      }
+
+    }catch(error){
+      alert("Ocorreu um erro ao tentar atualizar o aplicativo.");
+
+    }
+    
+  }
+
   useEffect(()=>{
     userLogging();
+    checkForUpdates();
 
   }, []);
 

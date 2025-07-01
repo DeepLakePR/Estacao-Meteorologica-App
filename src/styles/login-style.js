@@ -21,6 +21,7 @@ const LoginStyle = StyleSheet.create({
         fontWeight: 'normal',
         textAlign: 'center',
         marginBottom: 10,
+        color: "#003366"
     },
 
     loginInput:{
@@ -29,17 +30,18 @@ const LoginStyle = StyleSheet.create({
         paddingTop: 6,
         paddingBottom: 6,
         borderRadius: 5,
-        backgroundColor: 'white',
+        backgroundColor: '#B3D1FF',
         textAlign: 'center',
         fontSize: 16,
         marginTop: 5,
-        marginBottom: 5
+        marginBottom: 5,
+        color: '#002B5B'
     },
     
     loginSubmitButton:{
         width: 125,
         height: 38,
-        backgroundColor: '#262626',
+        backgroundColor: '#0066CC',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 5

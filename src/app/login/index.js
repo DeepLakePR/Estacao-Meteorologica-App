@@ -148,12 +148,12 @@ export default function Login() {
 
 
             <TextInput style={LoginStyle.loginInput}
-                onChangeText={setUserCGMRegister} placeholder={"CGM"} placeholderTextColor={"#c9c9c9"}
+                onChangeText={setUserCGMRegister} placeholder={"CGM"} placeholderTextColor={"#789acf"}
                 inputMode='numeric' />
 
 
             <TextInput style={{ ...LoginStyle.loginInput, marginBottom: 20 }}
-                onChangeText={setPassword} placeholder={"Senha"} placeholderTextColor={"#c9c9c9"}
+                onChangeText={setPassword} placeholder={"Senha"} placeholderTextColor={"#789acf"}
                 inputMode='numeric' />
 
 

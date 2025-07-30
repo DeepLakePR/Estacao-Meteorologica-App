@@ -45,7 +45,7 @@ const PrevisionStyle = StyleSheet.create({
         paddingTop: 12,
         paddingBottom: 12,
         overflow: 'scroll',
-        backgroundColor: '#383838', 
+        backgroundColor: '#2469bcff', 
         borderRadius: 5,
 
         // Android Shadow
@@ -58,16 +58,16 @@ const PrevisionStyle = StyleSheet.create({
         shadowRadius: 3,
     },
 
-    previsionTableScrollView:{
-        width: '95%', 
-        height: 'auto', 
-        backgroundColor: '#525252', 
-    },
-
     previsionTableHead: {
         alignContent: "center",
         justifyContent: 'center',
-        backgroundColor: '#454545',
+        backgroundColor: '#1155a8ff',
+    },
+
+    previsionTableScrollView:{
+        width: '95%', 
+        height: 'auto', 
+        backgroundColor: '#3b79c3ff', 
     },
 
     previsionTableText: {
@@ -107,6 +107,25 @@ const PrevisionStyle = StyleSheet.create({
 
     previsionMonthlyAverageTextBold: {
         fontWeight: '900'
+    },
+
+    ////////////////////////
+    // Weather Graph:
+    previsionWeatherGraph: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        padding: 20,
+        paddingRight: 0,
+        marginBottom: 20
+    },
+
+    previsionWeatherGraphLegendColor: {
+        marginLeft: 5, 
+        marginRight: 5, 
+        width: 16, 
+        height: 16, 
+        borderRadius: '50%',
     },
 
     ////////////////////////

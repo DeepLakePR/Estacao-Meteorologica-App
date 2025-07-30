@@ -30,6 +30,9 @@ import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import * as XLSX from "xlsx";
 import { writeAsStringAsync, StorageAccessFramework, EncodingType } from "expo-file-system";
 
+// Chart (Graphs)
+import { CurveType, LineChart } from "react-native-gifted-charts";
+
 // Firestore
 import { Database } from '../../services/firebase.initialize.js';
 import { collection, getDoc, getDocs, doc, addDoc, updateDoc, query, orderBy, onSnapshot, where } from 'firebase/firestore'
@@ -57,6 +60,51 @@ const ANOTATION_FORMAT = {
 
     "anotationCreatedBy": null
 };
+
+const dev_d_1 = [
+    {value:18, label: "1"}, 
+    {value:15, label: "2"}, 
+    {value:21, label: "3"}, 
+    {value:17, label: "4"},
+    {value:18, label: "5"}, 
+    {value:16, label: "6"}, 
+    {value:20, label: "7"}, 
+    {value:22, label: "8"}, 
+    {value:25, label: "9"}, 
+    {value:23, label: "10"},
+    {value:18, label: "11"}, 
+    {value:15, label: "12"}, 
+    {value:21, label: "13"}, 
+    {value:17, label: "14"},
+    {value:18, label: "15"}, 
+    {value:16, label: "16"}, 
+    {value:20, label: "17"}, 
+    {value:22, label: "18"}, 
+    {value:25, label: "19"}, 
+    {value:23, label: "20"}
+]
+const dev_d_2 = [
+    {value:11}, 
+    {value:9}, 
+    {value:8}, 
+    {value:12},
+    {value:15}, 
+    {value:12}, 
+    {value:10}, 
+    {value:9}, 
+    {value:4}, 
+    {value:1},
+    {value:11}, 
+    {value:9}, 
+    {value:8}, 
+    {value:12},
+    {value:15}, 
+    {value:12}, 
+    {value:10}, 
+    {value:9}, 
+    {value:4}, 
+    {value:1}
+]
 
 // Prevision Function
 export default function Prevision() {
@@ -122,13 +170,13 @@ export default function Prevision() {
 
     const [isEditAnotation, setIsEditAnotation] = useState(false);
 
-    // Prevision
+    // Prevision Database
     const PrevisionsDatabaseRef = collection(Database, "previsions");
     const PrevisionDocRef = doc(Database, "previsions", previsionId);
     const PrevisionAnotationsRef = collection(PrevisionDocRef, "previsionAnotations");
 
     // Monthly Average Prevision
-    const [MonthlyAverageData, setMonthlyAverageData] = useState({
+    const [monthlyAverageData, setMonthlyAverageData] = useState({
         "temperaturaSeco": "N/A",
         "temperaturaUmido": "N/A",
 
@@ -143,6 +191,12 @@ export default function Prevision() {
         "pressao": "N/A",
 
         "velocidadeKm": "N/A",
+    });
+
+    // Weather Graph
+    const [weatherGraphData, setWeatherGraphData] = useState({
+        data: [],
+        data2: [],
     });
 
     //////////////////////////////////
@@ -282,6 +336,8 @@ export default function Prevision() {
                 "velocidadeKm": 0,
             }
 
+            const monthlyWeatherGraph = {data: [], data2: []};
+
             // Push Data Inside Array and Set Average
             querySnapshot.docs.forEach((anotationDoc) => {
 
@@ -344,6 +400,23 @@ export default function Prevision() {
 
                 });
 
+                const anotationDay = anotationCreatedAt.toDate().getDate();
+                const anotationMaxTemp = temperaturaMax;
+                const anotationMinTemp = temperaturaMin;
+
+                if(!monthlyWeatherGraph.data[anotationDay]){
+                    monthlyWeatherGraph.data[anotationDay] = [];
+
+                }
+                
+                monthlyWeatherGraph.data[anotationDay].push(cleanAndConvertToNumber(anotationMaxTemp));
+
+                if(!monthlyWeatherGraph.data2[anotationDay]){
+                    monthlyWeatherGraph.data2[anotationDay] = [];
+                }
+
+                monthlyWeatherGraph.data2[anotationDay].push(cleanAndConvertToNumber(anotationMinTemp));
+
             });
 
             // Calc Average
@@ -362,6 +435,12 @@ export default function Prevision() {
                 );
 
             });
+
+            // setWeatherGraphData();
+            // {
+            //         value: cleanAndConvertToNumber(anotationMinTemp), 
+            //         label: anotationDay.toString()
+            //     }
 
         });
 
@@ -691,62 +770,103 @@ export default function Prevision() {
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
                             Temp Seco: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.temperaturaSeco}ºC
+                                {monthlyAverageData.temperaturaSeco}ºC
                             </Text>
                         </Text>
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
                             Temp Úmido: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.temperaturaUmido}ºC
+                                {monthlyAverageData.temperaturaUmido}ºC
                             </Text>
                         </Text>
 
                         <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
                             UR: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.urTabela}
+                                {monthlyAverageData.urTabela}
                             </Text>
                         </Text>
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
                             Temp Mínima: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.temperaturaMin}ºC
+                                {monthlyAverageData.temperaturaMin}ºC
                             </Text>
                         </Text>
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
                             Temp Máxima: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.temperaturaMax}ºC
+                                {monthlyAverageData.temperaturaMax}ºC
                             </Text>
                         </Text>
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
                             Precipitação: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.precipitacao}mm
+                                {monthlyAverageData.precipitacao}mm
                             </Text>
                         </Text>
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
                             Ceu WeWe: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.ceuWeWe}
+                                {monthlyAverageData.ceuWeWe}
                             </Text>
                         </Text>
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
                             Solo 0900: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.solo0900}
+                                {monthlyAverageData.solo0900}
                             </Text>
                         </Text>
 
                         <Text style={PrevisionStyle.previsionMonthlyAverageText}>
                             Pressão: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.pressao}hPa
+                                {monthlyAverageData.pressao}hPa
                             </Text>
                         </Text>
 
                         <Text style={{ ...PrevisionStyle.previsionMonthlyAverageText, width: '100%' }}>
                             Veloc Vento Km/h: <Text style={PrevisionStyle.previsionMonthlyAverageTextBold}>
-                                {MonthlyAverageData.velocidadeKm}Km/h
+                                {monthlyAverageData.velocidadeKm}Km/h
                             </Text>
                         </Text>
 
+                    </View>
+
+                    <View style={PrevisionStyle.previsionWeatherGraph}>
+                        <LineChart
+                            data={weatherGraphData.data}
+                            data2={weatherGraphData.data2}
+                            spacing={30}
+                            thickness={3}
+                            noOfSections={4}
+                            yAxisColor="#323232ff"
+                            verticalLinesColor="rgba(62, 62, 62, 0.5)"
+                            xAxisColor="#323232ff"
+                            color="#e8591c"
+                            color2="#89b3e0"
+                            dataPointsColor1="#a73809ff"
+                            dataPointsColor2="#396ca3ff"
+                            startFillColor1="#d2531dff"
+                            endFillColor1="#7e1c0fff"
+                            startFillColor2="#5787baff"
+                            endFillColor2="#23364bff"
+                            startOpacity={1}
+                            endOpacity={0.3}
+                            curveType={CurveType.CUBIC}
+                            curved
+                            isAnimated
+                            animationDuration={3000}
+                            onDataChangeAnimationDuration={3000}
+                            renderDataPointsAfterAnimationEnds={false}
+                            scrollAnimation={true}
+                            adjustToWidth={true}
+                            areaChart
+                            yAxisLabelSuffix="ºC    "
+                        />
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
+                            <View style={{...PrevisionStyle.previsionWeatherGraphLegendColor, backgroundColor: '#e8591c'}}></View>
+                            <Text style={{marginRight: 15}}>Temperatura Máxima</Text>
+
+                            <View style={{...PrevisionStyle.previsionWeatherGraphLegendColor, backgroundColor: '#89b3e0'}}></View>
+                            <Text>Temperatura Mínima</Text>
+                        </View>
                     </View>
 
                     <View style={PrevisionStyle.buttonsWrapper}>

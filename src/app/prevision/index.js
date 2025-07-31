@@ -336,7 +336,7 @@ export default function Prevision() {
                 "velocidadeKm": 0,
             }
 
-            const monthlyWeatherGraph = {data: [], data2: []};
+            const monthlyWeatherGraph = {};
 
             // Push Data Inside Array and Set Average
             querySnapshot.docs.forEach((anotationDoc) => {
@@ -401,26 +401,18 @@ export default function Prevision() {
                 });
 
                 const anotationDay = anotationCreatedAt.toDate().getDate();
-                const anotationMaxTemp = temperaturaMax;
-                const anotationMinTemp = temperaturaMin;
+                const anotationMaxTemp = cleanAndConvertToNumber(temperaturaMax);
+                const anotationMinTemp = cleanAndConvertToNumber(temperaturaMin);
 
-                if(!monthlyWeatherGraph.data[anotationDay]){
-                    monthlyWeatherGraph.data[anotationDay] = [];
+                if(!monthlyWeatherGraph[anotationDay]) monthlyWeatherGraph[anotationDay] = { max: [], min: [] };
 
-                }
-                
-                monthlyWeatherGraph.data[anotationDay].push(cleanAndConvertToNumber(anotationMaxTemp));
-
-                if(!monthlyWeatherGraph.data2[anotationDay]){
-                    monthlyWeatherGraph.data2[anotationDay] = [];
-                }
-
-                monthlyWeatherGraph.data2[anotationDay].push(cleanAndConvertToNumber(anotationMinTemp));
+                monthlyWeatherGraph[anotationDay].max.push(anotationMaxTemp);
+                monthlyWeatherGraph[anotationDay].min.push(anotationMinTemp);
 
             });
 
             // Calc Average
-            Object.entries(sumAverage).map((keyValue) => {
+            Object.entries(sumAverage).map((keyValue) => {1
 
                 let sumResult = Math.round(
                     isNaN(keyValue[1] / anotationsLength)
@@ -436,11 +428,16 @@ export default function Prevision() {
 
             });
 
-            // setWeatherGraphData();
-            // {
-            //         value: cleanAndConvertToNumber(anotationMinTemp), 
-            //         label: anotationDay.toString()
-            //     }
+            const resultMonthlyTemps = Object.entries(monthlyWeatherGraph).map(([day, temps]) => ({
+                day: Number(day),
+                max: Math.max(...temps.max),
+                min: Math.min(...temps.min),
+            }));
+
+            setWeatherGraphData({
+                data: resultMonthlyTemps.map(r => ({ label: r.day, value: r.max})),
+                data2: resultMonthlyTemps.map(r => ({ label: r.day, value: r.min})),
+            });
 
         });
 
@@ -578,6 +575,8 @@ export default function Prevision() {
         realTimeUpdatePrevisionAnotations();
 
     }, []);
+
+    console.log(weatherGraphData);
 
     // Return
     return (
@@ -830,6 +829,7 @@ export default function Prevision() {
 
                     <View style={PrevisionStyle.previsionWeatherGraph}>
                         <LineChart
+                            key={JSON.stringify(weatherGraphData)}
                             data={weatherGraphData.data}
                             data2={weatherGraphData.data2}
                             spacing={30}
@@ -852,8 +852,8 @@ export default function Prevision() {
                             curved
                             isAnimated
                             animationDuration={3000}
+                            animateOnDataChange={true}
                             onDataChangeAnimationDuration={3000}
-                            renderDataPointsAfterAnimationEnds={false}
                             scrollAnimation={true}
                             adjustToWidth={true}
                             areaChart

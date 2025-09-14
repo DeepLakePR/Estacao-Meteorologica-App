@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 7.8.1"
+    "version": ">= 7.8.1",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -14,6 +15,7 @@
       }
     },
     "production": {
+      "autoIncrement": true,
       "distribution": "internal",
       "channel": "production",
       "android": {

@@ -139,9 +139,9 @@ export default function Login() {
 
         <View style={LoginStyle.mainContainer}>
 
-            <StatusBar style="dark" hidden={false} translucent={true} backgroundColor="#DCE8FF" />
+            <StatusBar style="dark" translucent backgroundColor="#DCE8FF" />
 
-            <Image style={LoginStyle.loginIcon} source={require("../../../assets/login-asset.png")} />
+            <Image style={LoginStyle.loginIcon} source={require("../../../assets/login/login-asset.png")} />
 
 
             <Text style={LoginStyle.loginTitle}>Insira as Informações {'\n'} de Acesso</Text>
@@ -168,7 +168,7 @@ export default function Login() {
 
 
             <View style={{ ...LoginStyle.loginLoadingView, display: loadingIconDisplay }}>
-                <ActivityIndicator size="large" animation={true} color={"white"} style={LoginStyle.loginLoadingIcon} />
+                <ActivityIndicator  size="large" animation={true} color={"white"} style={LoginStyle.loginLoadingIcon} />
             </View>
 
         </View>

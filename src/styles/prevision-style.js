@@ -256,11 +256,11 @@ const PrevisionStyle = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 20,
+        zIndex: 9999,
     },
 
     previsionLoadingIcon:{
-        zIndex: 999,
+        zIndex: 99999,
     }
 
 });

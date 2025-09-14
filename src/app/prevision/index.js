@@ -9,6 +9,7 @@ import {
     Modal,
     ScrollView,
     ActivityIndicator,
+    Alert,
 } from "react-native";
 
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
@@ -35,7 +36,7 @@ import { CurveType, LineChart } from "react-native-gifted-charts";
 
 // Firestore
 import { Database } from '../../services/firebase.initialize.js';
-import { collection, getDoc, getDocs, doc, addDoc, updateDoc, query, orderBy, onSnapshot, where } from 'firebase/firestore'
+import { collection, getDoc, getDocs, doc, addDoc, updateDoc, query, orderBy, onSnapshot, where, deleteDoc } from 'firebase/firestore'
 
 // Variables
 const DATE_FORMAT_CONFIG = { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' };
@@ -62,48 +63,48 @@ const ANOTATION_FORMAT = {
 };
 
 const dev_d_1 = [
-    {value:18, label: "1"}, 
-    {value:15, label: "2"}, 
-    {value:21, label: "3"}, 
-    {value:17, label: "4"},
-    {value:18, label: "5"}, 
-    {value:16, label: "6"}, 
-    {value:20, label: "7"}, 
-    {value:22, label: "8"}, 
-    {value:25, label: "9"}, 
-    {value:23, label: "10"},
-    {value:18, label: "11"}, 
-    {value:15, label: "12"}, 
-    {value:21, label: "13"}, 
-    {value:17, label: "14"},
-    {value:18, label: "15"}, 
-    {value:16, label: "16"}, 
-    {value:20, label: "17"}, 
-    {value:22, label: "18"}, 
-    {value:25, label: "19"}, 
-    {value:23, label: "20"}
+    { value: 18, label: "1" },
+    { value: 15, label: "2" },
+    { value: 21, label: "3" },
+    { value: 17, label: "4" },
+    { value: 18, label: "5" },
+    { value: 16, label: "6" },
+    { value: 20, label: "7" },
+    { value: 22, label: "8" },
+    { value: 25, label: "9" },
+    { value: 23, label: "10" },
+    { value: 18, label: "11" },
+    { value: 15, label: "12" },
+    { value: 21, label: "13" },
+    { value: 17, label: "14" },
+    { value: 18, label: "15" },
+    { value: 16, label: "16" },
+    { value: 20, label: "17" },
+    { value: 22, label: "18" },
+    { value: 25, label: "19" },
+    { value: 23, label: "20" }
 ]
 const dev_d_2 = [
-    {value:11}, 
-    {value:9}, 
-    {value:8}, 
-    {value:12},
-    {value:15}, 
-    {value:12}, 
-    {value:10}, 
-    {value:9}, 
-    {value:4}, 
-    {value:1},
-    {value:11}, 
-    {value:9}, 
-    {value:8}, 
-    {value:12},
-    {value:15}, 
-    {value:12}, 
-    {value:10}, 
-    {value:9}, 
-    {value:4}, 
-    {value:1}
+    { value: 11 },
+    { value: 9 },
+    { value: 8 },
+    { value: 12 },
+    { value: 15 },
+    { value: 12 },
+    { value: 10 },
+    { value: 9 },
+    { value: 4 },
+    { value: 1 },
+    { value: 11 },
+    { value: 9 },
+    { value: 8 },
+    { value: 12 },
+    { value: 15 },
+    { value: 12 },
+    { value: 10 },
+    { value: 9 },
+    { value: 4 },
+    { value: 1 }
 ]
 
 // Prevision Function
@@ -357,7 +358,7 @@ export default function Prevision() {
                     anotationCreatedBy,
                 } = anotationDoc.data();
 
-                const anotation = {...anotationDoc.data(), "id": anotationDoc.id}
+                const anotation = { ...anotationDoc.data(), "id": anotationDoc.id }
 
                 // Push to Array
                 finalDataPrevisionAnotations.push([
@@ -385,7 +386,7 @@ export default function Prevision() {
 
                     <TouchableOpacity style={{ alignItems: 'center' }} onPress={
                         () => openAnotationModal(
-                            'edit', 
+                            'edit',
                             anotation
                         )
                     }>
@@ -404,7 +405,7 @@ export default function Prevision() {
                 const anotationMaxTemp = cleanAndConvertToNumber(temperaturaMax);
                 const anotationMinTemp = cleanAndConvertToNumber(temperaturaMin);
 
-                if(!monthlyWeatherGraph[anotationDay]) monthlyWeatherGraph[anotationDay] = { max: [], min: [] };
+                if (!monthlyWeatherGraph[anotationDay]) monthlyWeatherGraph[anotationDay] = { max: [], min: [] };
 
                 monthlyWeatherGraph[anotationDay].max.push(anotationMaxTemp);
                 monthlyWeatherGraph[anotationDay].min.push(anotationMinTemp);
@@ -412,7 +413,8 @@ export default function Prevision() {
             });
 
             // Calc Average
-            Object.entries(sumAverage).map((keyValue) => {1
+            Object.entries(sumAverage).map((keyValue) => {
+                1
 
                 let sumResult = Math.round(
                     isNaN(keyValue[1] / anotationsLength)
@@ -435,8 +437,8 @@ export default function Prevision() {
             }));
 
             setWeatherGraphData({
-                data: resultMonthlyTemps.map(r => ({ label: r.day, value: r.max})),
-                data2: resultMonthlyTemps.map(r => ({ label: r.day, value: r.min})),
+                data: resultMonthlyTemps.map(r => ({ label: r.day, value: r.max })),
+                data2: resultMonthlyTemps.map(r => ({ label: r.day, value: r.min })),
             });
 
         });
@@ -475,11 +477,11 @@ export default function Prevision() {
 
             let haveEmptyValues = Object.keys(singlePrevisionAnotation).some(
                 key => {
-                    if (key !== "anotationCreatedAt" && key !== "anotationCreatedBy") 
-                        return typeof(singlePrevisionAnotation[key]) === 'object' ? true 
-                        : typeof(singlePrevisionAnotation[key]) === "string" && singlePrevisionAnotation[key].trim().length === 0 
-                        ? true : false
-                    
+                    if (key !== "anotationCreatedAt" && key !== "anotationCreatedBy")
+                        return typeof (singlePrevisionAnotation[key]) === 'object' ? true
+                            : typeof (singlePrevisionAnotation[key]) === "string" && singlePrevisionAnotation[key].trim().length === 0
+                                ? true : false
+
                 })
 
             if (haveEmptyValues) {
@@ -494,12 +496,12 @@ export default function Prevision() {
                 'anotationCreatedBy': user.userName
             }
 
-            if(!isEditAnotation){
+            if (!isEditAnotation) {
                 await addDoc(PrevisionAnotationsRef, anotation);
 
-            }else{
-                await updateDoc(doc(PrevisionAnotationsRef, singlePrevisionAnotation.id), 
-                    (({id, ...anotation}) => anotation )(anotation)
+            } else {
+                await updateDoc(doc(PrevisionAnotationsRef, singlePrevisionAnotation.id),
+                    (({ id, ...anotation }) => anotation)(anotation)
                 );
 
             }
@@ -513,10 +515,34 @@ export default function Prevision() {
 
     }
 
+    // Delete Prevision Anotation
+    async function handlePrevisionDelete() {
+
+        Alert.alert(
+            "Deletar Previsão?",
+            "Você tem certeza que deseja deletar essa anotação?",
+            [
+                {
+                    text: "Cancelar", style: "cancel"
+                },
+                {
+                    text: "Deletar", onPress: () => {
+
+                        const anotationRef = doc(PrevisionAnotationsRef, singlePrevisionAnotation.id);
+                        deleteDoc(anotationRef);
+                        setModalAnotation(false);
+
+                    }
+                }
+            ]
+        );
+
+    }
+
     // Set New Prevision Anotation
     function setSinglePrevisionAnotationInput(newValue, finalCombination, property) {
 
-        if(newValue.length === 0){
+        if (newValue.length === 0) {
             setSinglePrevisionAnotation({
                 ...singlePrevisionAnotation,
                 [property]: newValue
@@ -540,13 +566,13 @@ export default function Prevision() {
     // Open Anotation Modal
     function openAnotationModal(type, anotationToEdit) {
 
-        if(type === "new") {
+        if (type === "new") {
             setSinglePrevisionAnotation(ANOTATION_FORMAT);
             setCurrentDateTimePicker(new Date());
             setIsEditAnotation(false);
-            
 
-        }else { // Edit
+
+        } else { // Edit
             setSinglePrevisionAnotation(anotationToEdit);
             setCurrentDateTimePicker(anotationToEdit.anotationCreatedAt.toDate());
             setIsEditAnotation(true);
@@ -575,8 +601,6 @@ export default function Prevision() {
         realTimeUpdatePrevisionAnotations();
 
     }, []);
-
-    console.log(weatherGraphData);
 
     // Return
     return (
@@ -629,15 +653,15 @@ export default function Prevision() {
                                                 placeholder={ANOTATION_FORMAT[anotationKey].placeholder} placeholderTextColor={"#a8a8a8"}
                                                 inputMode={anotationKey !== "direcao" ? "numeric" : "text"}
                                                 value={
-                                                    isEditAnotation 
-                                                    ? anotationKey === "direcao" 
-                                                        ? singlePrevisionAnotation[anotationKey] 
-                                                        : cleanAndConvertToNumber(singlePrevisionAnotation[anotationKey], true) 
-                                                    : typeof(singlePrevisionAnotation[anotationKey]) === "string" 
+                                                    isEditAnotation
                                                         ? anotationKey === "direcao"
-                                                            ? singlePrevisionAnotation[anotationKey] 
+                                                            ? singlePrevisionAnotation[anotationKey]
                                                             : cleanAndConvertToNumber(singlePrevisionAnotation[anotationKey], true)
-                                                        : ""
+                                                        : typeof (singlePrevisionAnotation[anotationKey]) === "string"
+                                                            ? anotationKey === "direcao"
+                                                                ? singlePrevisionAnotation[anotationKey]
+                                                                : cleanAndConvertToNumber(singlePrevisionAnotation[anotationKey], true)
+                                                            : ""
                                                 }
                                                 onChangeText={(text) => setSinglePrevisionAnotationInput(text, ANOTATION_FORMAT[anotationKey].acronym, anotationKey)}
                                             />
@@ -718,6 +742,20 @@ export default function Prevision() {
                                         {!isEditAnotation ? "Criar" : "Salvar"}
                                     </Text>
                                 </TouchableOpacity>
+
+                                {isEditAnotation && (
+                                    <View style={{
+                                        position: 'absolute',
+                                        bottom: 20,
+                                        right: 10,
+                                        padding: 10
+                                    }}>
+                                        <TouchableOpacity style={{ padding: 8 }} activeOpacity={0.25}
+                                            onPress={() => handlePrevisionDelete()}>
+                                            <FontAwesome name="trash" size={22} color="black" />
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
                             </View>
 
                             <View style={{ ...PrevisionStyle.previsionLoadingView, display: previsionLoadingIconDisplay }}>
@@ -861,10 +899,10 @@ export default function Prevision() {
                         />
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
-                            <View style={{...PrevisionStyle.previsionWeatherGraphLegendColor, backgroundColor: '#e8591c'}}></View>
-                            <Text style={{marginRight: 15}}>Temperatura Máxima</Text>
+                            <View style={{ ...PrevisionStyle.previsionWeatherGraphLegendColor, backgroundColor: '#e8591c' }}></View>
+                            <Text style={{ marginRight: 15 }}>Temperatura Máxima</Text>
 
-                            <View style={{...PrevisionStyle.previsionWeatherGraphLegendColor, backgroundColor: '#89b3e0'}}></View>
+                            <View style={{ ...PrevisionStyle.previsionWeatherGraphLegendColor, backgroundColor: '#89b3e0' }}></View>
                             <Text>Temperatura Mínima</Text>
                         </View>
                     </View>
